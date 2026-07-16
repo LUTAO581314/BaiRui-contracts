@@ -2125,6 +2125,3122 @@ span_id?: string
 }
 })
 
+export interface ChannelIngress {
+schema_version: "1.0"
+ingress_id: string
+binding_id: string
+channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
+channel_account_id: string
+message_id: string
+sender: {
+channel_user_id: string
+display_name?: string
+identity_id?: string
+}
+conversation: {
+channel_conversation_id: string
+kind: ("direct" | "group" | "thread")
+thread_id?: string
+title?: string
+}
+content: {
+kind: ("text" | "markdown" | "image" | "audio" | "file" | "event")
+text?: string
+data?: {
+[k: string]: unknown
+}
+}
+/**
+ * @maxItems 20
+ */
+attachments?: []|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]
+reply_to_message_id?: string
+received_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelIngressAck {
+schema_version: "1.0"
+ingress_id: string
+status: ("accepted" | "duplicate" | "rejected")
+error_code?: string
+acknowledged_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelDeliveryLeaseRequest {
+schema_version: "1.0"
+worker_id: string
+/**
+ * @minItems 1
+ * @maxItems 5
+ */
+channels: [("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]
+/**
+ * @maxItems 100
+ */
+binding_ids?: string[]
+limit: number
+lease_seconds: number
+requested_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelDeliveryBatch {
+schema_version: "1.0"
+lease_id: string
+worker_id: string
+/**
+ * @maxItems 100
+ */
+deliveries: {
+outbound_id: string
+binding_id: string
+channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
+channel_account_id: string
+conversation: {
+channel_conversation_id: string
+kind: ("direct" | "group" | "thread")
+thread_id?: string
+title?: string
+}
+content: {
+kind: ("text" | "markdown" | "image" | "audio" | "file" | "event")
+text?: string
+data?: {
+[k: string]: unknown
+}
+}
+/**
+ * @maxItems 20
+ */
+attachments?: []|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]|[{
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}, {
+attachment_id: string
+kind: ("image" | "audio" | "video" | "file")
+url?: string
+media_type?: string
+name?: string
+size_bytes?: number
+}]
+reply_to_message_id?: string
+attempt: number
+lease_token: string
+available_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}[]
+leased_until: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelDeliveryReceipt {
+schema_version: "1.0"
+outbound_id: string
+binding_id: string
+lease_token: string
+status: ("delivered" | "retryable" | "failed")
+attempt: number
+channel_message_id?: string
+error_code?: string
+retry_after_ms?: number
+observed_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelHealthReport {
+schema_version: "1.0"
+binding_id: string
+channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
+worker_id: string
+sequence: number
+status: ("pending" | "connected" | "degraded" | "error" | "disconnected" | "disabled")
+/**
+ * @maxItems 20
+ */
+capabilities: []|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]|[("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket"), ("receive" | "send" | "reply" | "attachments" | "webhook" | "websocket")]
+adapter_version?: string
+latency_ms?: number
+last_inbound_at?: string
+last_outbound_at?: string
+error_code?: string
+observed_at: string
+}
+
+export interface ChannelCredentialResolution {
+binding: {
+id: string
+organization_id: string
+user_id: string
+agent_id: string
+channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
+channel_account_id: string
+metadata: {
+[k: string]: unknown
+}
+}
+credential: {
+values: {
+[k: string]: string
+}
+}
+}
+
 export interface IntegrationRequestEnvelope {
 request: {
 request_id: string

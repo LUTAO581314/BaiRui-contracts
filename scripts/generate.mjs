@@ -10,7 +10,9 @@ function json(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-function operation(pathname, method, schemaName) {
+function operation(pathname, method, schemaName, responseSchemaName = null, responseStatus = 200) {
+  const success = { description: responseStatus === 202 ? "Accepted" : "Success" };
+  if (responseSchemaName) success.content = { "application/json": { schema: { $ref: `#/components/schemas/${SCHEMAS[responseSchemaName].title}` } } };
   return {
     operationId: `${method}${pathname.replace(/[^A-Za-z0-9]+(.)/g, (_, value) => value.toUpperCase())}`,
     security: [{ machineSignature: [] }],
@@ -19,7 +21,7 @@ function operation(pathname, method, schemaName) {
       content: { "application/json": { schema: { $ref: `#/components/schemas/${SCHEMAS[schemaName].title}` } } }
     },
     responses: {
-      200: { description: "Accepted" },
+      [responseStatus]: success,
       400: { description: "Contract validation failed" },
       401: { description: "Machine authentication failed" }
     }
@@ -45,7 +47,9 @@ export async function generatedArtifacts() {
   const artifacts = new Map();
   for (const [name, schema] of Object.entries(SCHEMAS)) artifacts.set(`schemas/${name}.schema.json`, json(schema));
   const paths = {};
-  for (const [pathname, [method, schemaName]] of Object.entries(OPENAPI_PATHS)) paths[pathname] = { [method]: operation(pathname, method, schemaName) };
+  for (const [pathname, [method, schemaName, responseSchemaName, responseStatus]] of Object.entries(OPENAPI_PATHS)) {
+    paths[pathname] = { [method]: operation(pathname, method, schemaName, responseSchemaName, responseStatus) };
+  }
   paths["/api/internal/runtime/agents/{agentId}/authorizations/{authorizationId}/resolve"] = {
     post: {
       operationId: "resolveAgentAuthorization",
@@ -61,9 +65,21 @@ export async function generatedArtifacts() {
       }
     }
   };
+  paths["/api/internal/channels/bindings/{bindingId}/resolve"] = {
+    post: {
+      operationId: "resolveChannelBindingCredential",
+      security: [{ machineSignature: [] }],
+      parameters: [{ name: "bindingId", in: "path", required: true, schema: { type: "string" } }],
+      responses: {
+        200: { description: "Channel Worker scoped credential", content: { "application/json": { schema: { $ref: "#/components/schemas/ChannelCredentialResolution" } } } },
+        401: { description: "Channel Worker identity rejected" },
+        404: { description: "Channel binding unavailable" }
+      }
+    }
+  };
   const openapi = {
     openapi: "3.1.0",
-    info: { title: "BaiRui Internal Contracts", version: "1.0.0" },
+    info: { title: "BaiRui Internal Contracts", version: "1.1.0" },
     paths,
     components: {
       securitySchemes: {

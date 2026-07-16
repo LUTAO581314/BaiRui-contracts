@@ -6,6 +6,13 @@ import { fileURLToPath } from "node:url";
 import {
   CONTROL_ACTIONS,
   ContractValidationError,
+  validateChannelCredentialResolution,
+  validateChannelDeliveryBatch,
+  validateChannelDeliveryLeaseRequest,
+  validateChannelDeliveryReceipt,
+  validateChannelHealthReport,
+  validateChannelIngress,
+  validateChannelIngressAck,
   validateControlCommand,
   validateCredentialResolution,
   validateRuntimeHeartbeat,
@@ -76,8 +83,66 @@ test("credential contracts validate structure without echoing values in errors",
   assert.fail("invalid credential response was accepted");
 });
 
+test("channel ingress and acknowledgements carry stable deduplication identities", () => {
+  const trace = { correlation_id: "channel_trace_1" };
+  const ingress = {
+    schema_version: "1.0",
+    ingress_id: "ingress_1",
+    binding_id: "binding_1",
+    channel: "feishu",
+    channel_account_id: "app_1",
+    message_id: "message_1",
+    sender: { channel_user_id: "ou_1", display_name: "User" },
+    conversation: { channel_conversation_id: "oc_1", kind: "group" },
+    content: { kind: "text", text: "hello" },
+    attachments: [],
+    received_at: now,
+    trace
+  };
+  assert.equal(validateChannelIngress(ingress).message_id, "message_1");
+  assert.equal(validateChannelIngressAck({ schema_version: "1.0", ingress_id: "ingress_1", status: "duplicate", acknowledged_at: now, trace }).status, "duplicate");
+  assert.throws(() => validateChannelIngress({ ...ingress, organization_id: "untrusted_hint" }), ContractValidationError);
+});
+
+test("channel delivery leases bind receipts to attempts and lease tokens", () => {
+  const trace = { correlation_id: "delivery_trace_1" };
+  const request = { schema_version: "1.0", worker_id: "worker_1", channels: ["feishu", "qq"], limit: 10, lease_seconds: 30, requested_at: now, trace };
+  assert.equal(validateChannelDeliveryLeaseRequest(request).limit, 10);
+  const delivery = {
+    outbound_id: "outbound_1",
+    binding_id: "binding_1",
+    channel: "feishu",
+    channel_account_id: "app_1",
+    conversation: { channel_conversation_id: "oc_1", kind: "group" },
+    content: { kind: "text", text: "reply" },
+    attempt: 1,
+    lease_token: "lease_token_1",
+    available_at: now,
+    trace
+  };
+  assert.equal(validateChannelDeliveryBatch({ schema_version: "1.0", lease_id: "lease_1", worker_id: "worker_1", deliveries: [delivery], leased_until: later, trace }).deliveries.length, 1);
+  assert.equal(validateChannelDeliveryReceipt({ schema_version: "1.0", outbound_id: "outbound_1", binding_id: "binding_1", lease_token: "lease_token_1", status: "delivered", attempt: 1, channel_message_id: "message_2", observed_at: now, trace }).status, "delivered");
+});
+
+test("channel health cannot claim connected without bidirectional capability or leak data", () => {
+  const report = { schema_version: "1.0", binding_id: "binding_1", channel: "wechat", worker_id: "worker_1", sequence: 1, status: "connected", capabilities: ["receive", "send", "webhook"], adapter_version: "1.0.0", observed_at: now };
+  assert.equal(validateChannelHealthReport(report).status, "connected");
+  assert.throws(() => validateChannelHealthReport({ ...report, capabilities: ["receive"] }), ContractValidationError);
+  assert.throws(() => validateChannelHealthReport({ ...report, secret: "must-not-pass" }), ContractValidationError);
+  assert.throws(() => validateChannelHealthReport({ ...report, message: "must-not-pass" }), ContractValidationError);
+});
+
+test("channel credential resolution is binding scoped", () => {
+  const resolution = {
+    binding: { id: "binding_1", organization_id: "org_1", user_id: "user_1", agent_id: "agent_1", channel: "qq", channel_account_id: "app_1", metadata: {} },
+    credential: { values: { appId: "app_1", token: "secret-value" } }
+  };
+  assert.equal(validateChannelCredentialResolution(resolution).binding.agent_id, "agent_1");
+  assert.throws(() => validateChannelCredentialResolution({ ...resolution, browser_visible: true }), ContractValidationError);
+});
+
 test("OpenAPI, schemas, and generated declarations are committed", () => {
-  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "dist/index.d.ts"]) {
+  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
     assert.equal(fs.existsSync(path.join(root, relative)), true, relative);
   }
 });

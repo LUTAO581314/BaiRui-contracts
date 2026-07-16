@@ -1,4 +1,8 @@
 import {
+  CHANNEL_CONNECTION_STATUSES,
+  CHANNEL_DELIVERY_STATUSES,
+  CHANNEL_PROTOCOL_VERSION,
+  CHANNELS,
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
@@ -23,6 +27,54 @@ const trace = {
   additionalProperties: false,
   required: ["correlation_id"],
   properties: { correlation_id: identifier, parent_id: identifier, span_id: identifier }
+};
+
+const channelConversation = {
+  type: "object",
+  additionalProperties: false,
+  required: ["channel_conversation_id", "kind"],
+  properties: {
+    channel_conversation_id: identifier,
+    kind: { enum: ["direct", "group", "thread"] },
+    thread_id: identifier,
+    title: { type: "string", maxLength: 200 }
+  }
+};
+
+const channelContent = {
+  type: "object",
+  additionalProperties: false,
+  required: ["kind"],
+  properties: {
+    kind: { enum: ["text", "markdown", "image", "audio", "file", "event"] },
+    text: { type: "string", maxLength: 100000 },
+    data: flexibleObject
+  }
+};
+
+const channelAttachment = {
+  type: "object",
+  additionalProperties: false,
+  required: ["attachment_id", "kind"],
+  properties: {
+    attachment_id: identifier,
+    kind: { enum: ["image", "audio", "video", "file"] },
+    url: { type: "string", format: "uri", maxLength: 4096 },
+    media_type: { type: "string", maxLength: 200 },
+    name: { type: "string", maxLength: 500 },
+    size_bytes: { type: "integer", minimum: 0 }
+  }
+};
+
+const channelSender = {
+  type: "object",
+  additionalProperties: false,
+  required: ["channel_user_id"],
+  properties: {
+    channel_user_id: identifier,
+    display_name: { type: "string", maxLength: 200 },
+    identity_id: identifier
+  }
 };
 
 function document(name, body) {
@@ -393,6 +445,173 @@ export const channelEnvelopeSchema = document("channel-envelope", {
   ]
 });
 
+export const channelIngressSchema = document("channel-ingress", {
+  title: "ChannelIngress",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "ingress_id", "binding_id", "channel", "channel_account_id", "message_id", "sender", "conversation", "content", "received_at", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    ingress_id: identifier,
+    binding_id: identifier,
+    channel: { enum: CHANNELS },
+    channel_account_id: identifier,
+    message_id: identifier,
+    sender: channelSender,
+    conversation: channelConversation,
+    content: channelContent,
+    attachments: { type: "array", maxItems: 20, items: channelAttachment },
+    reply_to_message_id: identifier,
+    received_at: timestamp,
+    trace
+  }
+});
+
+export const channelIngressAckSchema = document("channel-ingress-ack", {
+  title: "ChannelIngressAck",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "ingress_id", "status", "acknowledged_at", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    ingress_id: identifier,
+    status: { enum: ["accepted", "duplicate", "rejected"] },
+    error_code: identifier,
+    acknowledged_at: timestamp,
+    trace
+  }
+});
+
+const channelDelivery = {
+  type: "object",
+  additionalProperties: false,
+  required: ["outbound_id", "binding_id", "channel", "channel_account_id", "conversation", "content", "attempt", "lease_token", "available_at", "trace"],
+  properties: {
+    outbound_id: identifier,
+    binding_id: identifier,
+    channel: { enum: CHANNELS },
+    channel_account_id: identifier,
+    conversation: channelConversation,
+    content: channelContent,
+    attachments: { type: "array", maxItems: 20, items: channelAttachment },
+    reply_to_message_id: identifier,
+    attempt: { type: "integer", minimum: 1 },
+    lease_token: identifier,
+    available_at: timestamp,
+    trace
+  }
+};
+
+export const channelDeliveryLeaseRequestSchema = document("channel-delivery-lease-request", {
+  title: "ChannelDeliveryLeaseRequest",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "worker_id", "channels", "limit", "lease_seconds", "requested_at", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    worker_id: identifier,
+    channels: { type: "array", minItems: 1, maxItems: CHANNELS.length, uniqueItems: true, items: { enum: CHANNELS } },
+    binding_ids: { type: "array", maxItems: 100, uniqueItems: true, items: identifier },
+    limit: { type: "integer", minimum: 1, maximum: 100 },
+    lease_seconds: { type: "integer", minimum: 5, maximum: 300 },
+    requested_at: timestamp,
+    trace
+  }
+});
+
+export const channelDeliveryBatchSchema = document("channel-delivery-batch", {
+  title: "ChannelDeliveryBatch",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "lease_id", "worker_id", "deliveries", "leased_until", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    lease_id: identifier,
+    worker_id: identifier,
+    deliveries: { type: "array", maxItems: 100, items: channelDelivery },
+    leased_until: timestamp,
+    trace
+  }
+});
+
+export const channelDeliveryReceiptSchema = document("channel-delivery-receipt", {
+  title: "ChannelDeliveryReceipt",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "outbound_id", "binding_id", "lease_token", "status", "attempt", "observed_at", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    outbound_id: identifier,
+    binding_id: identifier,
+    lease_token: identifier,
+    status: { enum: CHANNEL_DELIVERY_STATUSES },
+    attempt: { type: "integer", minimum: 1 },
+    channel_message_id: identifier,
+    error_code: identifier,
+    retry_after_ms: { type: "integer", minimum: 0, maximum: 86400000 },
+    observed_at: timestamp,
+    trace
+  }
+});
+
+export const channelHealthReportSchema = document("channel-health-report", {
+  title: "ChannelHealthReport",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "binding_id", "channel", "worker_id", "sequence", "status", "capabilities", "observed_at"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    binding_id: identifier,
+    channel: { enum: CHANNELS },
+    worker_id: identifier,
+    sequence: { type: "integer", minimum: 1 },
+    status: { enum: CHANNEL_CONNECTION_STATUSES },
+    capabilities: { type: "array", maxItems: 20, uniqueItems: true, items: { enum: ["receive", "send", "reply", "attachments", "webhook", "websocket"] } },
+    adapter_version: { type: "string", minLength: 1, maxLength: 200 },
+    latency_ms: { type: "number", minimum: 0 },
+    last_inbound_at: timestamp,
+    last_outbound_at: timestamp,
+    error_code: identifier,
+    observed_at: timestamp
+  }
+});
+
+export const channelCredentialResolutionSchema = document("channel-credential-resolution", {
+  title: "ChannelCredentialResolution",
+  type: "object",
+  additionalProperties: false,
+  required: ["binding", "credential"],
+  properties: {
+    binding: {
+      type: "object",
+      additionalProperties: false,
+      required: ["id", "organization_id", "user_id", "agent_id", "channel", "channel_account_id", "metadata"],
+      properties: {
+        id: identifier,
+        organization_id: identifier,
+        user_id: identifier,
+        agent_id: identifier,
+        channel: { enum: CHANNELS },
+        channel_account_id: identifier,
+        metadata: flexibleObject
+      }
+    },
+    credential: {
+      type: "object",
+      additionalProperties: false,
+      required: ["values"],
+      properties: {
+        values: {
+          type: "object",
+          minProperties: 1,
+          maxProperties: 32,
+          additionalProperties: { type: "string", minLength: 1, maxLength: 65536 }
+        }
+      }
+    }
+  }
+});
+
 const integrationRequest = {
   type: "object",
   additionalProperties: false,
@@ -436,6 +655,13 @@ export const SCHEMAS = Object.freeze({
   "credential-resolution": credentialResolutionSchema,
   "memory-projection": memoryProjectionSchema,
   "channel-envelope": channelEnvelopeSchema,
+  "channel-ingress": channelIngressSchema,
+  "channel-ingress-ack": channelIngressAckSchema,
+  "channel-delivery-lease-request": channelDeliveryLeaseRequestSchema,
+  "channel-delivery-batch": channelDeliveryBatchSchema,
+  "channel-delivery-receipt": channelDeliveryReceiptSchema,
+  "channel-health-report": channelHealthReportSchema,
+  "channel-credential-resolution": channelCredentialResolutionSchema,
   "integration-request-envelope": integrationRequestEnvelopeSchema,
   "integration-result": integrationResultSchema
 });
@@ -445,6 +671,10 @@ export const OPENAPI_PATHS = Object.freeze({
   "/v1/runtime/operations": ["post", "runtime-operation-envelope"],
   "/v1/runtime/streams": ["post", "runtime-stream-envelope"],
   "/v1/integrations/requests": ["post", "integration-request-envelope"],
+  "/api/internal/channels/ingress": ["post", "channel-ingress", "channel-ingress-ack", 202],
+  "/api/internal/channels/deliveries/lease": ["post", "channel-delivery-lease-request", "channel-delivery-batch", 200],
+  "/api/internal/channels/delivery-receipts": ["post", "channel-delivery-receipt", null, 202],
+  "/api/internal/channels/health": ["post", "channel-health-report", null, 202],
   "/api/internal/control-plane/heartbeats": ["post", "runtime-heartbeat"],
   "/api/internal/control-plane/resources": ["post", "resource-report"]
 });
