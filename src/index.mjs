@@ -18,9 +18,24 @@ const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
 const validators = new Map(Object.entries(SCHEMAS).map(([name, schema]) => [name, ajv.compile(schema)]));
 
+function issueMessage(contract, issues) {
+  const issue = issues?.[0];
+  const label = contract.replaceAll("-", " ");
+  if (!issue) return `Invalid ${contract} contract`;
+  if (issue.keyword === "additionalProperties") {
+    const field = issue.params?.additionalProperty ?? "field";
+    return issue.instancePath === ""
+      ? `Unknown ${label} field: ${field}`
+      : `Argument ${field} is not allowed at ${issue.instancePath}`;
+  }
+  if (issue.keyword === "required") return `Missing required ${issue.params?.missingProperty ?? "field"} in ${contract}`;
+  if (issue.keyword === "enum" || issue.keyword === "const") return `${issue.instancePath || contract} is not allowed`;
+  return `Invalid ${contract} contract: ${issue.instancePath || "/"} ${issue.message ?? issue.keyword}`;
+}
+
 export class ContractValidationError extends TypeError {
   constructor(contract, errors) {
-    super(`Invalid ${contract} contract`);
+    super(issueMessage(contract, errors));
     this.name = "ContractValidationError";
     this.code = "invalid_contract";
     this.contract = contract;

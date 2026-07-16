@@ -166,6 +166,7 @@ const heartbeatComponent = {
     moduleId: identifier,
     status: { enum: MODULE_STATUSES },
     version: { type: "string", minLength: 1, maxLength: 200 },
+    upstreamRef: { type: "string", maxLength: 200 },
     capabilities: { type: "array", maxItems: 100, uniqueItems: true, items: identifier },
     metrics: numericMap,
     observedAt: timestamp
@@ -182,7 +183,7 @@ export const runtimeHeartbeatSchema = document("runtime-heartbeat", {
     userId: identifier,
     agentId: identifier,
     runtimeId: identifier,
-    sequence: { type: "integer", minimum: 0 },
+    sequence: { type: "integer", minimum: 1 },
     status: { enum: MODULE_STATUSES },
     runtimeVersion: { type: "string", maxLength: 200 },
     boundaryVersion: { type: "string", maxLength: 200 },
@@ -203,7 +204,8 @@ export const runtimeHeartbeatSchema = document("runtime-heartbeat", {
           layer: { enum: MODULE_LAYERS },
           componentId: identifier,
           eventType: identifier,
-          severity: { enum: ["info", "warning", "error", "critical"] },
+          severity: { enum: ["debug", "info", "warning", "error", "critical"] },
+          traceId: identifier,
           metrics: numericMap,
           occurredAt: timestamp
         }
@@ -257,7 +259,7 @@ export const resourceReportSchema = document("resource-report", {
     samples: {
       type: "array",
       minItems: 1,
-      maxItems: 1000,
+      maxItems: 500,
       items: {
         type: "object",
         additionalProperties: false,
@@ -303,7 +305,7 @@ export const credentialResolutionSchema = document("credential-resolution", {
         id: identifier,
         service: identifier,
         label: { type: "string", minLength: 1, maxLength: 200 },
-        authType: { enum: ["api_key", "bearer", "basic", "oauth_refresh"] },
+        authType: { enum: ["api_key", "bearer", "bearer_token", "basic", "oauth_refresh"] },
         endpointUrl: { type: ["string", "null"], format: "uri" },
         metadata: flexibleObject
       }

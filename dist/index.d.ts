@@ -156,6 +156,7 @@ layer: ("core-runtime" | "service-integration" | "data-storage" | "channel-bridg
 moduleId: string
 status: ("healthy" | "degraded" | "unhealthy" | "unknown")
 version: string
+upstreamRef?: string
 /**
  * @maxItems 100
  */
@@ -169,6 +170,7 @@ layer: ("core-runtime" | "service-integration" | "data-storage" | "channel-bridg
 moduleId: string
 status: ("healthy" | "degraded" | "unhealthy" | "unknown")
 version: string
+upstreamRef?: string
 /**
  * @maxItems 100
  */
@@ -182,6 +184,7 @@ layer: ("core-runtime" | "service-integration" | "data-storage" | "channel-bridg
 moduleId: string
 status: ("healthy" | "degraded" | "unhealthy" | "unknown")
 version: string
+upstreamRef?: string
 /**
  * @maxItems 100
  */
@@ -198,7 +201,8 @@ events: {
 layer?: ("core-runtime" | "service-integration" | "data-storage" | "channel-bridge" | "ui-exposure")
 componentId?: string
 eventType: string
-severity: ("info" | "warning" | "error" | "critical")
+severity: ("debug" | "info" | "warning" | "error" | "critical")
+traceId?: string
 metrics: {
 [k: string]: number
 }
@@ -221,7 +225,7 @@ export interface ResourceReport {
 serverId: string
 /**
  * @minItems 1
- * @maxItems 1000
+ * @maxItems 500
  */
 samples: [{
 agentId: string
@@ -1601,7 +1605,7 @@ authorization: {
 id: string
 service: string
 label: string
-authType: ("api_key" | "bearer" | "basic" | "oauth_refresh")
+authType: ("api_key" | "bearer" | "bearer_token" | "basic" | "oauth_refresh")
 endpointUrl?: (string | null)
 metadata: {
 [k: string]: unknown
