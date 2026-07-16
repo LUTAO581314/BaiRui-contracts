@@ -1,5 +1,10 @@
-export const CONTRACTS_VERSION = "1.0.0";
+export const CONTRACTS_VERSION = "1.1.0";
 export const CONTROL_PROTOCOL_VERSION = "1.0";
+export const CHANNEL_PROTOCOL_VERSION = "1.0";
+
+export const CHANNELS = Object.freeze(["web", "cli", "feishu", "wechat", "qq"]);
+export const CHANNEL_CONNECTION_STATUSES = Object.freeze(["pending", "connected", "degraded", "error", "disconnected", "disabled"]);
+export const CHANNEL_DELIVERY_STATUSES = Object.freeze(["delivered", "retryable", "failed"]);
 
 export const CONTROL_ACTION_ARGUMENTS = Object.freeze({
   "snapshot.collect": { required: [], optional: [] },

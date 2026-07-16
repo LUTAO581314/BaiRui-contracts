@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v1/channel-delivery-receipt.schema.json",
+  "title": "ChannelDeliveryReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "outbound_id",
+    "binding_id",
+    "lease_token",
+    "status",
+    "attempt",
+    "observed_at",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "outbound_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "binding_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "lease_token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "status": {
+      "enum": [
+        "delivered",
+        "retryable",
+        "failed"
+      ]
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "channel_message_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "error_code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "retry_after_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400000
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "parent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        }
+      }
+    }
+  }
+}

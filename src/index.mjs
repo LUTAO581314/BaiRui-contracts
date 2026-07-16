@@ -1,6 +1,10 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import {
+  CHANNEL_CONNECTION_STATUSES,
+  CHANNEL_DELIVERY_STATUSES,
+  CHANNEL_PROTOCOL_VERSION,
+  CHANNELS,
   CONTRACTS_VERSION,
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
@@ -73,10 +77,33 @@ export const validateResourceReport = (value) => assertContract("resource-report
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
 export const validateMemoryProjection = (value) => assertContract("memory-projection", value);
 export const validateChannelEnvelope = (value) => assertContract("channel-envelope", value);
+export const validateChannelIngress = (value) => assertContract("channel-ingress", value);
+export const validateChannelIngressAck = (value) => assertContract("channel-ingress-ack", value);
+export const validateChannelDeliveryLeaseRequest = (value) => assertContract("channel-delivery-lease-request", value);
+export const validateChannelDeliveryBatch = (value) => assertContract("channel-delivery-batch", value);
+export const validateChannelDeliveryReceipt = (value) => assertContract("channel-delivery-receipt", value);
+export function validateChannelHealthReport(value) {
+  const report = assertContract("channel-health-report", value);
+  if (report.status === "connected" && !(report.capabilities.includes("receive") && report.capabilities.includes("send"))) {
+    throw new ContractValidationError("channel-health-report", [{
+      instancePath: "/capabilities",
+      schemaPath: "#/semantic",
+      keyword: "contains",
+      params: {},
+      message: "must include receive and send when status is connected"
+    }]);
+  }
+  return report;
+}
+export const validateChannelCredentialResolution = (value) => assertContract("channel-credential-resolution", value);
 export const validateIntegrationRequestEnvelope = (value) => assertContract("integration-request-envelope", value);
 export const validateIntegrationResult = (value) => assertContract("integration-result", value);
 
 export {
+  CHANNEL_CONNECTION_STATUSES,
+  CHANNEL_DELIVERY_STATUSES,
+  CHANNEL_PROTOCOL_VERSION,
+  CHANNELS,
   CONTRACTS_VERSION,
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
