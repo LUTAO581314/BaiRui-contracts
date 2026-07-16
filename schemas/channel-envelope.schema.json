@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v1/channel-envelope.schema.json",
+  "title": "ChannelEnvelope",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "message_id",
+        "channel",
+        "channel_account_id",
+        "sender",
+        "conversation",
+        "content",
+        "received_at",
+        "trace"
+      ],
+      "properties": {
+        "message_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "channel": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "channel_account_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "sender": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "channel_user_id"
+          ],
+          "properties": {
+            "identity_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "channel_user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "display_name": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "tenant_hint": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "roles": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            }
+          }
+        },
+        "conversation": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "content": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "attachments": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correlation_id"
+          ],
+          "properties": {
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "span_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outbound_id",
+        "channel",
+        "conversation",
+        "content",
+        "trace"
+      ],
+      "properties": {
+        "outbound_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "channel": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "conversation": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "content": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "reply_to": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "delivery_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correlation_id"
+          ],
+          "properties": {
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "span_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outbound_id",
+        "status",
+        "trace"
+      ],
+      "properties": {
+        "outbound_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "status": {
+          "enum": [
+            "delivered",
+            "failed",
+            "retrying",
+            "rate_limited",
+            "skipped"
+          ]
+        },
+        "channel_message_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correlation_id"
+          ],
+          "properties": {
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "span_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

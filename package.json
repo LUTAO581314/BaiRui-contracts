@@ -1,0 +1,39 @@
+{
+  "name": "@bairui/contracts",
+  "version": "1.0.0",
+  "description": "Versioned runtime, control-plane, telemetry, credential, memory, channel, and integration contracts for BaiRui Agent.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./src/index.mjs"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "dist",
+    "openapi",
+    "schemas",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/check-generated.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "pnpm run check:generated && pnpm test"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^15.0.4"
+  }
+}

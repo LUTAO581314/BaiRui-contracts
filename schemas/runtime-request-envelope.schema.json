@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v1/runtime-request-envelope.schema.json",
+  "title": "RuntimeRequestEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request",
+    "config"
+  ],
+  "properties": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "request_type",
+        "tenant",
+        "actor",
+        "input",
+        "runtime_config_ref",
+        "trace",
+        "created_at"
+      ],
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "request_type": {
+          "enum": [
+            "message",
+            "task",
+            "approval_result",
+            "tool_result",
+            "system_event"
+          ]
+        },
+        "tenant": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organization_id",
+            "agent_id"
+          ],
+          "properties": {
+            "organization_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "agent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          }
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "user_id"
+          ],
+          "properties": {
+            "user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "roles": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            }
+          }
+        },
+        "channel_context": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "correlation_id"
+          ],
+          "properties": {
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "span_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "runtime_config_ref": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "capability_hints": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          }
+        }
+      }
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "config_id",
+        "model_policy",
+        "tool_policy",
+        "memory_policy",
+        "approval_policy",
+        "storage_policy",
+        "integration_policy"
+      ],
+      "properties": {
+        "config_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "model_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "tool_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "memory_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "approval_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "storage_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "integration_policy": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "channel_policy": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

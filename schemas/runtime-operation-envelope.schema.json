@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v1/runtime-operation-envelope.schema.json",
+  "title": "RuntimeOperationEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "tenant",
+    "actor",
+    "input",
+    "trace",
+    "created_at"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "health.detailed",
+        "discovery.models",
+        "discovery.capabilities",
+        "discovery.skills",
+        "discovery.toolsets",
+        "sessions.list",
+        "sessions.create",
+        "sessions.get",
+        "sessions.update",
+        "sessions.delete",
+        "sessions.messages",
+        "sessions.fork",
+        "sessions.chat",
+        "runs.create",
+        "runs.get",
+        "runs.approve",
+        "runs.stop",
+        "jobs.list",
+        "jobs.create",
+        "jobs.get",
+        "jobs.update",
+        "jobs.delete",
+        "jobs.pause",
+        "jobs.resume",
+        "jobs.run",
+        "memory.snapshot",
+        "memory.apply"
+      ]
+    },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organization_id",
+        "agent_id"
+      ],
+      "properties": {
+        "organization_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "agent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user_id"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "roles": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          }
+        }
+      }
+    },
+    "channel_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "parent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
