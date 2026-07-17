@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { compile } from "json-schema-to-typescript";
 import { OPENAPI_PATHS, SCHEMAS } from "../src/schemas.mjs";
+import { CONTRACTS_VERSION } from "../src/protocol.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -79,7 +80,7 @@ export async function generatedArtifacts() {
   };
   const openapi = {
     openapi: "3.1.0",
-    info: { title: "BaiRui Internal Contracts", version: "1.1.0" },
+    info: { title: "BaiRui Internal Contracts", version: CONTRACTS_VERSION },
     paths,
     components: {
       securitySchemes: {

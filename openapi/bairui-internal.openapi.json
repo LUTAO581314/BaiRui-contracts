@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "BaiRui Internal Contracts",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "paths": {
     "/v1/runtime/requests": {
@@ -257,6 +257,44 @@
         "responses": {
           "202": {
             "description": "Accepted"
+          },
+          "400": {
+            "description": "Contract validation failed"
+          },
+          "401": {
+            "description": "Machine authentication failed"
+          }
+        }
+      }
+    },
+    "/api/internal/channels/bindings": {
+      "post": {
+        "operationId": "postApiInternalChannelsBindings",
+        "security": [
+          {
+            "machineSignature": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelBindingInventoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelBindingInventory"
+                }
+              }
+            }
           },
           "400": {
             "description": "Contract validation failed"
@@ -3382,6 +3420,187 @@
                   "minLength": 1,
                   "maxLength": 65536
                 }
+              }
+            }
+          }
+        }
+      },
+      "ChannelBindingInventoryRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory-request.schema.json",
+        "title": "ChannelBindingInventoryRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "worker_id",
+          "channels",
+          "trace"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          },
+          "worker_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "channels": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "web",
+                "cli",
+                "feishu",
+                "wechat",
+                "qq"
+              ]
+            }
+          },
+          "trace": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "span_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            }
+          }
+        }
+      },
+      "ChannelBindingInventory": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory.schema.json",
+        "title": "ChannelBindingInventory",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "worker_id",
+          "bindings",
+          "generated_at",
+          "trace"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          },
+          "worker_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "bindings": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "organization_id",
+                "user_id",
+                "agent_id",
+                "channel",
+                "channel_account_id",
+                "status",
+                "connection_generation",
+                "updated_at"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "organization_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "user_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "agent_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "channel": {
+                  "enum": [
+                    "web",
+                    "cli",
+                    "feishu",
+                    "wechat",
+                    "qq"
+                  ]
+                },
+                "channel_account_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "status": {
+                  "enum": [
+                    "pending",
+                    "connected",
+                    "degraded",
+                    "error",
+                    "disconnected",
+                    "disabled",
+                    "unconfigured",
+                    "unavailable"
+                  ]
+                },
+                "connection_generation": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "callback_path": {
+                  "type": "string",
+                  "pattern": "^/",
+                  "maxLength": 1000
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "trace": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "span_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               }
             }
           }

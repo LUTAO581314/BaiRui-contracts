@@ -96,6 +96,8 @@ export function validateChannelHealthReport(value) {
   return report;
 }
 export const validateChannelCredentialResolution = (value) => assertContract("channel-credential-resolution", value);
+export const validateChannelBindingInventoryRequest = (value) => assertContract("channel-binding-inventory-request", value);
+export const validateChannelBindingInventory = (value) => assertContract("channel-binding-inventory", value);
 export const validateIntegrationRequestEnvelope = (value) => assertContract("integration-request-envelope", value);
 export const validateIntegrationResult = (value) => assertContract("integration-result", value);
 

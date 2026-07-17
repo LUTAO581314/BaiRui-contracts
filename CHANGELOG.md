@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+
+- Add a metadata-only Channel binding inventory request and response so
+  independent Workers can hot-load binding generations without receiving
+  credentials in discovery payloads.
+- Generate the OpenAPI document version from the canonical package version.
+
 ## 1.1.0
 
 - Add strict Channel ingress and deduplication acknowledgement contracts.

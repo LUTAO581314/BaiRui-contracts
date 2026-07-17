@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
   CONTROL_ACTIONS,
   ContractValidationError,
+  validateChannelBindingInventory,
+  validateChannelBindingInventoryRequest,
   validateChannelCredentialResolution,
   validateChannelDeliveryBatch,
   validateChannelDeliveryLeaseRequest,
@@ -139,6 +141,16 @@ test("channel credential resolution is binding scoped", () => {
   };
   assert.equal(validateChannelCredentialResolution(resolution).binding.agent_id, "agent_1");
   assert.throws(() => validateChannelCredentialResolution({ ...resolution, browser_visible: true }), ContractValidationError);
+});
+
+test("channel inventory exposes binding metadata without credentials or content", () => {
+  const trace = { correlation_id: "inventory_trace_1" };
+  const request = { schema_version: "1.0", worker_id: "worker_1", channels: ["feishu", "wechat", "qq"], trace };
+  assert.equal(validateChannelBindingInventoryRequest(request).worker_id, "worker_1");
+  const inventory = { schema_version: "1.0", worker_id: "worker_1", bindings: [{ id: "binding_1", organization_id: "org_1", user_id: "user_1", agent_id: "agent_1", channel: "wechat", channel_account_id: "app_1", status: "pending", connection_generation: 2, callback_path: "/callbacks/wechat/binding_1", updated_at: now }], generated_at: now, trace };
+  assert.equal(validateChannelBindingInventory(inventory).bindings[0].connection_generation, 2);
+  assert.throws(() => validateChannelBindingInventory({ ...inventory, bindings: [{ ...inventory.bindings[0], credential: { token: "must-not-pass" } }] }), ContractValidationError);
+  assert.throws(() => validateChannelBindingInventory({ ...inventory, prompt: "must-not-pass" }), ContractValidationError);
 });
 
 test("OpenAPI, schemas, and generated declarations are committed", () => {

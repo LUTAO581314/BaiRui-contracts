@@ -12,7 +12,8 @@ The package owns versioned JSON Schema and OpenAPI contracts for:
 - Agent-scoped credential resolution;
 - Obsidian-compatible memory projection;
 - channel ingress, deduplication acknowledgements, delivery leases, receipts,
-  health reports, and Worker-scoped credential resolution;
+  health reports, metadata-only binding inventory, and Worker-scoped
+  credential resolution;
 - service integration requests and results.
 
 Consumers must pin an immutable Git tag. Production must never consume a branch
