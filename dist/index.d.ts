@@ -985,6 +985,25 @@ secret: string
 }
 }
 
+export interface AgentCredentialResolutionRequest {
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
+}
+authorization_id: string
+expected_service: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
 export interface MemoryProjection {
 schema_version: "2.0"
 projection_id: string
@@ -4687,6 +4706,25 @@ credential: {
 values: {
 [k: string]: string
 }
+}
+}
+
+export interface ChannelCredentialResolutionRequest {
+schema_version: "2.0"
+worker_id: string
+binding_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
 }
 }
 

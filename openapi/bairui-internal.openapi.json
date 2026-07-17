@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "BaiRui Internal Contracts",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "paths": {
     "/v1/runtime/requests": {
@@ -393,6 +393,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentCredentialResolutionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Agent-scoped credential",
@@ -431,6 +441,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelCredentialResolutionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Channel Worker scoped credential",
@@ -2520,6 +2540,96 @@
           }
         }
       },
+      "AgentCredentialResolutionRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v2/credential-resolution-request.schema.json",
+        "title": "AgentCredentialResolutionRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "owner_scope",
+          "authorization_id",
+          "expected_service",
+          "trace"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "runtime_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
+          },
+          "authorization_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "expected_service": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "trace": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "span_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            }
+          }
+        }
+      },
       "MemoryProjection": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://contracts.bairui.ai/v2/memory-projection.schema.json",
@@ -4115,6 +4225,95 @@
                   "minLength": 1,
                   "maxLength": 65536
                 }
+              }
+            }
+          }
+        }
+      },
+      "ChannelCredentialResolutionRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v2/channel-credential-resolution-request.schema.json",
+        "title": "ChannelCredentialResolutionRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "worker_id",
+          "binding_id",
+          "owner_scope",
+          "trace"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
+          "worker_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "binding_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
+          },
+          "trace": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "span_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               }
             }
           }

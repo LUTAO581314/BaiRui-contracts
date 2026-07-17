@@ -11,7 +11,8 @@ The package owns versioned JSON Schema and OpenAPI contracts for:
 - Runtime requests and operations;
 - Control Plane commands;
 - Runtime and host telemetry;
-- Agent-scoped credential resolution;
+- owner-scoped Runtime and Channel credential resolution requests and
+  responses;
 - Obsidian-compatible memory projection;
 - channel ingress, deduplication acknowledgements, delivery leases, receipts,
   health reports, metadata-only binding inventory, and Worker-scoped
