@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/channel-delivery-lease-request.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/channel-delivery-lease-request.schema.json",
   "title": "ChannelDeliveryLeaseRequest",
   "type": "object",
   "additionalProperties": false,
@@ -15,7 +15,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "2.0"
     },
     "worker_id": {
       "type": "string",

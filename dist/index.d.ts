@@ -1,3 +1,33 @@
+export interface AgentOwnerScope {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id?: string
+conversation_id?: string
+}
+
+export interface ArtifactPointer {
+schema_version: "1.0"
+artifact_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id?: string
+conversation_id?: string
+}
+kind: ("file" | "document" | "image" | "audio" | "video" | "dataset" | "archive" | "other")
+media_type: string
+size_bytes: number
+sha256: string
+created_at: string
+metadata?: {
+[k: string]: string
+}
+}
+
 export type ControlCommand = ({
 [k: string]: unknown
 } & {
@@ -21,12 +51,17 @@ created_at: string
 })
 
 export interface RuntimeRequestEnvelope {
+schema_version: "2.0"
 request: {
 request_id: string
 request_type: ("message" | "task" | "approval_result" | "tool_result" | "system_event")
-tenant: {
+owner_scope: {
 organization_id: string
+user_id: string
 agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
 }
 actor: {
 user_id: string
@@ -80,10 +115,15 @@ channel_policy?: {
 }
 
 export interface RuntimeOperationEnvelope {
+schema_version: "2.0"
 operation: ("health.detailed" | "discovery.models" | "discovery.capabilities" | "discovery.skills" | "discovery.toolsets" | "sessions.list" | "sessions.create" | "sessions.get" | "sessions.update" | "sessions.delete" | "sessions.messages" | "sessions.fork" | "sessions.chat" | "runs.create" | "runs.get" | "runs.approve" | "runs.stop" | "jobs.list" | "jobs.create" | "jobs.get" | "jobs.update" | "jobs.delete" | "jobs.pause" | "jobs.resume" | "jobs.run" | "memory.snapshot" | "memory.apply")
-tenant: {
+owner_scope: {
 organization_id: string
+user_id: string
 agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
 }
 actor: {
 user_id: string
@@ -107,10 +147,15 @@ input: {
 }
 
 export interface RuntimeStreamEnvelope {
+schema_version: "2.0"
 operation: ("sessions.chat.stream" | "runs.events")
-tenant: {
+owner_scope: {
 organization_id: string
+user_id: string
 agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
 }
 actor: {
 user_id: string
@@ -916,6 +961,15 @@ startedAt?: string
 }
 
 export interface CredentialResolution {
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id?: string
+conversation_id?: string
+}
 authorization: {
 id: string
 service: string
@@ -932,8 +986,16 @@ secret: string
 }
 
 export interface MemoryProjection {
-schema_version: "1.0"
+schema_version: "2.0"
 projection_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
+}
 memory: {
 /**
  * @maxItems 1000
@@ -961,6 +1023,15 @@ excluded_note_ids: string[]
 }
 
 export type ChannelEnvelope = ({
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 message_id: string
 channel: string
 channel_account_id: string
@@ -968,7 +1039,6 @@ sender: {
 identity_id?: string
 channel_user_id: string
 display_name?: string
-tenant_hint?: string
 roles?: string[]
 }
 conversation: {
@@ -1408,6 +1478,15 @@ parent_id?: string
 span_id?: string
 }
 } | {
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id: string
+}
 outbound_id: string
 channel: string
 conversation: {
@@ -1426,6 +1505,15 @@ parent_id?: string
 span_id?: string
 }
 } | {
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id: string
+}
 outbound_id: string
 status: ("delivered" | "failed" | "retrying" | "rate_limited" | "skipped")
 channel_message_id?: string
@@ -1441,7 +1529,15 @@ span_id?: string
 })
 
 export interface ChannelIngress {
-schema_version: "1.0"
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 ingress_id: string
 binding_id: string
 channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
@@ -2949,7 +3045,15 @@ span_id?: string
 }
 
 export interface ChannelIngressAck {
-schema_version: "1.0"
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 ingress_id: string
 status: ("accepted" | "duplicate" | "rejected")
 error_code?: string
@@ -2962,7 +3066,7 @@ span_id?: string
 }
 
 export interface ChannelDeliveryLeaseRequest {
-schema_version: "1.0"
+schema_version: "2.0"
 worker_id: string
 /**
  * @minItems 1
@@ -2984,13 +3088,21 @@ span_id?: string
 }
 
 export interface ChannelDeliveryBatch {
-schema_version: "1.0"
+schema_version: "2.0"
 lease_id: string
 worker_id: string
 /**
  * @maxItems 100
  */
 deliveries: {
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id: string
+}
 outbound_id: string
 binding_id: string
 channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
@@ -4501,7 +4613,15 @@ span_id?: string
 }
 
 export interface ChannelDeliveryReceipt {
-schema_version: "1.0"
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id: string
+}
 outbound_id: string
 binding_id: string
 lease_token: string
@@ -4519,7 +4639,15 @@ span_id?: string
 }
 
 export interface ChannelHealthReport {
-schema_version: "1.0"
+schema_version: "2.0"
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 binding_id: string
 channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
 worker_id: string
@@ -4538,11 +4666,17 @@ observed_at: string
 }
 
 export interface ChannelCredentialResolution {
+schema_version: "2.0"
 binding: {
 id: string
+owner_scope: {
 organization_id: string
 user_id: string
 agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
 channel_account_id: string
 metadata: {
@@ -4557,7 +4691,7 @@ values: {
 }
 
 export interface ChannelBindingInventoryRequest {
-schema_version: "1.0"
+schema_version: "2.0"
 worker_id: string
 /**
  * @minItems 1
@@ -4572,16 +4706,21 @@ span_id?: string
 }
 
 export interface ChannelBindingInventory {
-schema_version: "1.0"
+schema_version: "2.0"
 worker_id: string
 /**
  * @maxItems 10000
  */
 bindings: {
 id: string
+owner_scope: {
 organization_id: string
 user_id: string
 agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
 channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
 channel_account_id: string
 status: ("pending" | "connected" | "degraded" | "error" | "disconnected" | "disabled" | "unconfigured" | "unavailable")
@@ -4598,8 +4737,17 @@ span_id?: string
 }
 
 export interface IntegrationRequestEnvelope {
+schema_version: "2.0"
 request: {
 request_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
+}
 integration_id: string
 capability: string
 input: {
@@ -4618,7 +4766,16 @@ span_id?: string
 }
 
 export interface IntegrationResult {
+schema_version: "2.0"
 request_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id: string
+workspace_id: string
+conversation_id?: string
+}
 integration_id: string
 status: ("completed" | "partial" | "failed" | "skipped")
 output?: {
@@ -4628,7 +4785,24 @@ output?: {
  * @maxItems 100
  */
 artifacts?: {
-[k: string]: unknown
+schema_version: "1.0"
+artifact_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id?: string
+conversation_id?: string
+}
+kind: ("file" | "document" | "image" | "audio" | "video" | "dataset" | "archive" | "other")
+media_type: string
+size_bytes: number
+sha256: string
+created_at: string
+metadata?: {
+[k: string]: string
+}
 }[]
 usage?: {
 [k: string]: unknown

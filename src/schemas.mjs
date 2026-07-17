@@ -1,4 +1,5 @@
 import {
+  ARTIFACT_KINDS,
   CHANNEL_CONNECTION_STATUSES,
   CHANNEL_DELIVERY_STATUSES,
   CHANNEL_PROTOCOL_VERSION,
@@ -6,9 +7,11 @@ import {
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
+  DATA_PROTOCOL_VERSION,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,
+  RUNTIME_PROTOCOL_VERSION,
   RUNTIME_STREAM_OPERATIONS
 } from "./protocol.mjs";
 
@@ -21,6 +24,23 @@ const flexibleObject = { type: "object", additionalProperties: true };
 const numericMap = { type: "object", additionalProperties: { type: "number" } };
 const identifierArray = { type: "array", minItems: 1, maxItems: 100, uniqueItems: true, items: identifier };
 const argumentArrayFields = new Set(["probe_ids"]);
+
+function ownerScope(requiredContext = []) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["organization_id", "user_id", "agent_id", ...requiredContext],
+    properties: {
+      organization_id: identifier,
+      user_id: identifier,
+      agent_id: identifier,
+      runtime_id: identifier,
+      workspace_id: identifier,
+      conversation_id: identifier
+    },
+    dependentRequired: { conversation_id: ["workspace_id"] }
+  };
+}
 
 const trace = {
   type: "object",
@@ -78,17 +98,39 @@ const channelSender = {
 };
 
 function document(name, body) {
-  return { $schema: draft, $id: `https://contracts.bairui.ai/v1/${name}.schema.json`, ...body };
+  return { $schema: draft, $id: `https://contracts.bairui.ai/v2/${name}.schema.json`, ...body };
 }
+
+export const agentOwnerScopeSchema = document("agent-owner-scope", {
+  title: "AgentOwnerScope",
+  ...ownerScope()
+});
+
+const artifactPointer = {
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "artifact_id", "owner_scope", "kind", "media_type", "size_bytes", "sha256", "created_at"],
+  properties: {
+    schema_version: { const: "1.0" },
+    artifact_id: identifier,
+    owner_scope: ownerScope(),
+    kind: { enum: ARTIFACT_KINDS },
+    media_type: { type: "string", minLength: 1, maxLength: 200 },
+    size_bytes: { type: "integer", minimum: 0 },
+    sha256: { type: "string", pattern: "^[a-f0-9]{64}$" },
+    created_at: timestamp,
+    metadata: stringMap
+  }
+};
+
+export const artifactPointerSchema = document("artifact-pointer", {
+  title: "ArtifactPointer",
+  ...artifactPointer
+});
 
 function runtimePrincipalProperties() {
   return {
-    tenant: {
-      type: "object",
-      additionalProperties: false,
-      required: ["organization_id", "agent_id"],
-      properties: { organization_id: identifier, agent_id: identifier }
-    },
+    owner_scope: ownerScope(["runtime_id", "workspace_id"]),
     actor: {
       type: "object",
       additionalProperties: false,
@@ -157,7 +199,7 @@ export const controlCommandSchema = document("control-command", {
 const runtimeRequest = {
   type: "object",
   additionalProperties: false,
-  required: ["request_id", "request_type", "tenant", "actor", "input", "runtime_config_ref", "trace", "created_at"],
+  required: ["request_id", "request_type", "owner_scope", "actor", "input", "runtime_config_ref", "trace", "created_at"],
   properties: {
     request_id: identifier,
     request_type: { enum: ["message", "task", "approval_result", "tool_result", "system_event"] },
@@ -188,8 +230,8 @@ export const runtimeRequestEnvelopeSchema = document("runtime-request-envelope",
   title: "RuntimeRequestEnvelope",
   type: "object",
   additionalProperties: false,
-  required: ["request", "config"],
-  properties: { request: runtimeRequest, config: runtimeConfig }
+  required: ["schema_version", "request", "config"],
+  properties: { schema_version: { const: RUNTIME_PROTOCOL_VERSION }, request: runtimeRequest, config: runtimeConfig }
 });
 
 function operationSchema(name, operations) {
@@ -197,8 +239,9 @@ function operationSchema(name, operations) {
     title: name === "runtime-operation-envelope" ? "RuntimeOperationEnvelope" : "RuntimeStreamEnvelope",
     type: "object",
     additionalProperties: false,
-    required: ["operation", "tenant", "actor", "input", "trace", "created_at"],
+    required: ["schema_version", "operation", "owner_scope", "actor", "input", "trace", "created_at"],
     properties: {
+      schema_version: { const: RUNTIME_PROTOCOL_VERSION },
       operation: { enum: operations },
       ...runtimePrincipalProperties(),
       input: flexibleObject
@@ -347,8 +390,10 @@ export const credentialResolutionSchema = document("credential-resolution", {
   title: "CredentialResolution",
   type: "object",
   additionalProperties: false,
-  required: ["authorization", "credential"],
+  required: ["schema_version", "owner_scope", "authorization", "credential"],
   properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
+    owner_scope: ownerScope(),
     authorization: {
       type: "object",
       additionalProperties: false,
@@ -395,10 +440,11 @@ export const memoryProjectionSchema = document("memory-projection", {
   title: "MemoryProjection",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "projection_id", "memory", "user", "included_note_ids", "excluded_note_ids"],
+  required: ["schema_version", "projection_id", "owner_scope", "memory", "user", "included_note_ids", "excluded_note_ids"],
   properties: {
-    schema_version: { const: "1.0" },
+    schema_version: { const: DATA_PROTOCOL_VERSION },
     projection_id: identifier,
+    owner_scope: ownerScope(["runtime_id", "workspace_id"]),
     memory: projectionTarget,
     user: projectionTarget,
     included_note_ids: { type: "array", uniqueItems: true, items: identifier },
@@ -412,8 +458,10 @@ export const channelEnvelopeSchema = document("channel-envelope", {
     {
       type: "object",
       additionalProperties: false,
-      required: ["message_id", "channel", "channel_account_id", "sender", "conversation", "content", "received_at", "trace"],
+      required: ["schema_version", "owner_scope", "message_id", "channel", "channel_account_id", "sender", "conversation", "content", "received_at", "trace"],
       properties: {
+        schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+        owner_scope: ownerScope(["workspace_id"]),
         message_id: identifier,
         channel: identifier,
         channel_account_id: identifier,
@@ -421,7 +469,7 @@ export const channelEnvelopeSchema = document("channel-envelope", {
           type: "object",
           additionalProperties: false,
           required: ["channel_user_id"],
-          properties: { identity_id: identifier, channel_user_id: identifier, display_name: { type: "string", maxLength: 200 }, tenant_hint: identifier, roles: { type: "array", uniqueItems: true, items: identifier } }
+          properties: { identity_id: identifier, channel_user_id: identifier, display_name: { type: "string", maxLength: 200 }, roles: { type: "array", uniqueItems: true, items: identifier } }
         },
         conversation: flexibleObject,
         content: flexibleObject,
@@ -433,14 +481,14 @@ export const channelEnvelopeSchema = document("channel-envelope", {
     {
       type: "object",
       additionalProperties: false,
-      required: ["outbound_id", "channel", "conversation", "content", "trace"],
-      properties: { outbound_id: identifier, channel: identifier, conversation: flexibleObject, content: flexibleObject, reply_to: identifier, delivery_policy: flexibleObject, trace }
+      required: ["schema_version", "owner_scope", "outbound_id", "channel", "conversation", "content", "trace"],
+      properties: { schema_version: { const: CHANNEL_PROTOCOL_VERSION }, owner_scope: ownerScope(["workspace_id", "conversation_id"]), outbound_id: identifier, channel: identifier, conversation: flexibleObject, content: flexibleObject, reply_to: identifier, delivery_policy: flexibleObject, trace }
     },
     {
       type: "object",
       additionalProperties: false,
-      required: ["outbound_id", "status", "trace"],
-      properties: { outbound_id: identifier, status: { enum: ["delivered", "failed", "retrying", "rate_limited", "skipped"] }, channel_message_id: identifier, error: flexibleObject, delivered_at: timestamp, trace }
+      required: ["schema_version", "owner_scope", "outbound_id", "status", "trace"],
+      properties: { schema_version: { const: CHANNEL_PROTOCOL_VERSION }, owner_scope: ownerScope(["workspace_id", "conversation_id"]), outbound_id: identifier, status: { enum: ["delivered", "failed", "retrying", "rate_limited", "skipped"] }, channel_message_id: identifier, error: flexibleObject, delivered_at: timestamp, trace }
     }
   ]
 });
@@ -449,9 +497,10 @@ export const channelIngressSchema = document("channel-ingress", {
   title: "ChannelIngress",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "ingress_id", "binding_id", "channel", "channel_account_id", "message_id", "sender", "conversation", "content", "received_at", "trace"],
+  required: ["schema_version", "owner_scope", "ingress_id", "binding_id", "channel", "channel_account_id", "message_id", "sender", "conversation", "content", "received_at", "trace"],
   properties: {
     schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    owner_scope: ownerScope(["workspace_id"]),
     ingress_id: identifier,
     binding_id: identifier,
     channel: { enum: CHANNELS },
@@ -471,9 +520,10 @@ export const channelIngressAckSchema = document("channel-ingress-ack", {
   title: "ChannelIngressAck",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "ingress_id", "status", "acknowledged_at", "trace"],
+  required: ["schema_version", "owner_scope", "ingress_id", "status", "acknowledged_at", "trace"],
   properties: {
     schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    owner_scope: ownerScope(["workspace_id"]),
     ingress_id: identifier,
     status: { enum: ["accepted", "duplicate", "rejected"] },
     error_code: identifier,
@@ -485,8 +535,9 @@ export const channelIngressAckSchema = document("channel-ingress-ack", {
 const channelDelivery = {
   type: "object",
   additionalProperties: false,
-  required: ["outbound_id", "binding_id", "channel", "channel_account_id", "conversation", "content", "attempt", "lease_token", "available_at", "trace"],
+  required: ["owner_scope", "outbound_id", "binding_id", "channel", "channel_account_id", "conversation", "content", "attempt", "lease_token", "available_at", "trace"],
   properties: {
+    owner_scope: ownerScope(["workspace_id", "conversation_id"]),
     outbound_id: identifier,
     binding_id: identifier,
     channel: { enum: CHANNELS },
@@ -538,9 +589,10 @@ export const channelDeliveryReceiptSchema = document("channel-delivery-receipt",
   title: "ChannelDeliveryReceipt",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "outbound_id", "binding_id", "lease_token", "status", "attempt", "observed_at", "trace"],
+  required: ["schema_version", "owner_scope", "outbound_id", "binding_id", "lease_token", "status", "attempt", "observed_at", "trace"],
   properties: {
     schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    owner_scope: ownerScope(["workspace_id", "conversation_id"]),
     outbound_id: identifier,
     binding_id: identifier,
     lease_token: identifier,
@@ -558,9 +610,10 @@ export const channelHealthReportSchema = document("channel-health-report", {
   title: "ChannelHealthReport",
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "binding_id", "channel", "worker_id", "sequence", "status", "capabilities", "observed_at"],
+  required: ["schema_version", "owner_scope", "binding_id", "channel", "worker_id", "sequence", "status", "capabilities", "observed_at"],
   properties: {
     schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    owner_scope: ownerScope(["workspace_id"]),
     binding_id: identifier,
     channel: { enum: CHANNELS },
     worker_id: identifier,
@@ -580,17 +633,16 @@ export const channelCredentialResolutionSchema = document("channel-credential-re
   title: "ChannelCredentialResolution",
   type: "object",
   additionalProperties: false,
-  required: ["binding", "credential"],
+  required: ["schema_version", "binding", "credential"],
   properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
     binding: {
       type: "object",
       additionalProperties: false,
-      required: ["id", "organization_id", "user_id", "agent_id", "channel", "channel_account_id", "metadata"],
+      required: ["id", "owner_scope", "channel", "channel_account_id", "metadata"],
       properties: {
         id: identifier,
-        organization_id: identifier,
-        user_id: identifier,
-        agent_id: identifier,
+        owner_scope: ownerScope(["workspace_id"]),
         channel: { enum: CHANNELS },
         channel_account_id: identifier,
         metadata: flexibleObject
@@ -639,12 +691,10 @@ export const channelBindingInventorySchema = document("channel-binding-inventory
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["id", "organization_id", "user_id", "agent_id", "channel", "channel_account_id", "status", "connection_generation", "updated_at"],
+        required: ["id", "owner_scope", "channel", "channel_account_id", "status", "connection_generation", "updated_at"],
         properties: {
           id: identifier,
-          organization_id: identifier,
-          user_id: identifier,
-          agent_id: identifier,
+          owner_scope: ownerScope(["workspace_id"]),
           channel: { enum: CHANNELS },
           channel_account_id: identifier,
           status: { enum: [...CHANNEL_CONNECTION_STATUSES, "unconfigured", "unavailable"] },
@@ -662,29 +712,31 @@ export const channelBindingInventorySchema = document("channel-binding-inventory
 const integrationRequest = {
   type: "object",
   additionalProperties: false,
-  required: ["request_id", "integration_id", "capability", "input", "timeout_ms", "trace"],
-  properties: { request_id: identifier, integration_id: identifier, capability: identifier, input: flexibleObject, options: flexibleObject, timeout_ms: { type: "integer", minimum: 100, maximum: 900000 }, trace }
+  required: ["request_id", "owner_scope", "integration_id", "capability", "input", "timeout_ms", "trace"],
+  properties: { request_id: identifier, owner_scope: ownerScope(["runtime_id", "workspace_id"]), integration_id: identifier, capability: identifier, input: flexibleObject, options: flexibleObject, timeout_ms: { type: "integer", minimum: 100, maximum: 900000 }, trace }
 };
 
 export const integrationRequestEnvelopeSchema = document("integration-request-envelope", {
   title: "IntegrationRequestEnvelope",
   type: "object",
   additionalProperties: false,
-  required: ["request"],
-  properties: { request: integrationRequest }
+  required: ["schema_version", "request"],
+  properties: { schema_version: { const: DATA_PROTOCOL_VERSION }, request: integrationRequest }
 });
 
 export const integrationResultSchema = document("integration-result", {
   title: "IntegrationResult",
   type: "object",
   additionalProperties: false,
-  required: ["request_id", "integration_id", "status", "trace"],
+  required: ["schema_version", "request_id", "owner_scope", "integration_id", "status", "trace"],
   properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
     request_id: identifier,
+    owner_scope: ownerScope(["runtime_id", "workspace_id"]),
     integration_id: identifier,
     status: { enum: ["completed", "partial", "failed", "skipped"] },
     output: flexibleObject,
-    artifacts: { type: "array", maxItems: 100, items: flexibleObject },
+    artifacts: { type: "array", maxItems: 100, items: artifactPointer },
     usage: flexibleObject,
     error: flexibleObject,
     trace,
@@ -693,6 +745,8 @@ export const integrationResultSchema = document("integration-result", {
 });
 
 export const SCHEMAS = Object.freeze({
+  "agent-owner-scope": agentOwnerScopeSchema,
+  "artifact-pointer": artifactPointerSchema,
   "control-command": controlCommandSchema,
   "runtime-request-envelope": runtimeRequestEnvelopeSchema,
   "runtime-operation-envelope": runtimeOperationEnvelopeSchema,

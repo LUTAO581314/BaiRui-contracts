@@ -1,6 +1,7 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import {
+  ARTIFACT_KINDS,
   CHANNEL_CONNECTION_STATUSES,
   CHANNEL_DELIVERY_STATUSES,
   CHANNEL_PROTOCOL_VERSION,
@@ -11,9 +12,12 @@ import {
   CONTROL_APPROVAL_ACTIONS,
   CONTROL_COMMAND_STATES,
   CONTROL_PROTOCOL_VERSION,
+  DATA_PROTOCOL_VERSION,
+  IDENTITY_KINDS,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,
+  RUNTIME_PROTOCOL_VERSION,
   RUNTIME_STREAM_OPERATIONS
 } from "./protocol.mjs";
 import { SCHEMAS } from "./schemas.mjs";
@@ -67,11 +71,46 @@ export function validateRuntimeRequestEnvelope(value) {
   if (envelope.request.runtime_config_ref !== envelope.config.config_id) {
     throw new ContractValidationError("runtime-request-envelope", [{ instancePath: "/request/runtime_config_ref", schemaPath: "#/semantic", keyword: "const", params: {}, message: "must match config.config_id" }]);
   }
+  assertOwnerActor("runtime-request-envelope", envelope.request);
+  assertConversationBinding("runtime-request-envelope", envelope.request.owner_scope, envelope.request.channel_context?.conversation_id);
   return envelope;
 }
 
-export const validateRuntimeOperationEnvelope = (value) => assertContract("runtime-operation-envelope", value);
-export const validateRuntimeStreamEnvelope = (value) => assertContract("runtime-stream-envelope", value);
+const SESSION_SCOPED_OPERATIONS = new Set([
+  "sessions.get", "sessions.update", "sessions.delete", "sessions.messages", "sessions.fork", "sessions.chat",
+  "sessions.chat.stream"
+]);
+
+function semanticIssue(contract, instancePath, message) {
+  throw new ContractValidationError(contract, [{ instancePath, schemaPath: "#/semantic", keyword: "ownership", params: {}, message }]);
+}
+
+function assertOwnerActor(contract, value) {
+  if (value.actor.user_id !== value.owner_scope.user_id) semanticIssue(contract, "/actor/user_id", "must match owner_scope.user_id");
+}
+
+function assertConversationBinding(contract, scope, conversationId) {
+  if (conversationId && scope.conversation_id !== conversationId) semanticIssue(contract, "/owner_scope/conversation_id", "must match the addressed conversation");
+}
+
+function validateRuntimeOperation(contract, value) {
+  const envelope = assertContract(contract, value);
+  assertOwnerActor(contract, envelope);
+  if (SESSION_SCOPED_OPERATIONS.has(envelope.operation)) {
+    if (typeof envelope.input.session_id !== "string") semanticIssue(contract, "/input/session_id", "is required for this operation");
+    assertConversationBinding(contract, envelope.owner_scope, envelope.input.session_id);
+  }
+  return envelope;
+}
+
+function sameOwner(left, right) {
+  return ["organization_id", "user_id", "agent_id"].every((field) => left[field] === right[field]);
+}
+
+export const validateAgentOwnerScope = (value) => assertContract("agent-owner-scope", value);
+export const validateArtifactPointer = (value) => assertContract("artifact-pointer", value);
+export const validateRuntimeOperationEnvelope = (value) => validateRuntimeOperation("runtime-operation-envelope", value);
+export const validateRuntimeStreamEnvelope = (value) => validateRuntimeOperation("runtime-stream-envelope", value);
 export const validateRuntimeHeartbeat = (value) => assertContract("runtime-heartbeat", value);
 export const validateResourceReport = (value) => assertContract("resource-report", value);
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
@@ -99,9 +138,16 @@ export const validateChannelCredentialResolution = (value) => assertContract("ch
 export const validateChannelBindingInventoryRequest = (value) => assertContract("channel-binding-inventory-request", value);
 export const validateChannelBindingInventory = (value) => assertContract("channel-binding-inventory", value);
 export const validateIntegrationRequestEnvelope = (value) => assertContract("integration-request-envelope", value);
-export const validateIntegrationResult = (value) => assertContract("integration-result", value);
+export function validateIntegrationResult(value) {
+  const result = assertContract("integration-result", value);
+  for (const [index, artifact] of (result.artifacts ?? []).entries()) {
+    if (!sameOwner(result.owner_scope, artifact.owner_scope)) semanticIssue("integration-result", `/artifacts/${index}/owner_scope`, "must match result.owner_scope");
+  }
+  return result;
+}
 
 export {
+  ARTIFACT_KINDS,
   CHANNEL_CONNECTION_STATUSES,
   CHANNEL_DELIVERY_STATUSES,
   CHANNEL_PROTOCOL_VERSION,
@@ -112,9 +158,12 @@ export {
   CONTROL_APPROVAL_ACTIONS,
   CONTROL_COMMAND_STATES,
   CONTROL_PROTOCOL_VERSION,
+  DATA_PROTOCOL_VERSION,
+  IDENTITY_KINDS,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,
+  RUNTIME_PROTOCOL_VERSION,
   RUNTIME_STREAM_OPERATIONS,
   SCHEMAS
 };

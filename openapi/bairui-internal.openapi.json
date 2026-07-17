@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "BaiRui Internal Contracts",
-    "version": "1.2.1"
+    "version": "2.0.0"
   },
   "paths": {
     "/v1/runtime/requests": {
@@ -462,9 +462,153 @@
       }
     },
     "schemas": {
+      "AgentOwnerScope": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v2/agent-owner-scope.schema.json",
+        "title": "AgentOwnerScope",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization_id",
+          "user_id",
+          "agent_id"
+        ],
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "user_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "agent_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "runtime_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "workspace_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "conversation_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          }
+        },
+        "dependentRequired": {
+          "conversation_id": [
+            "workspace_id"
+          ]
+        }
+      },
+      "ArtifactPointer": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://contracts.bairui.ai/v2/artifact-pointer.schema.json",
+        "title": "ArtifactPointer",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "artifact_id",
+          "owner_scope",
+          "kind",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "created_at"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          },
+          "artifact_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
+          },
+          "kind": {
+            "enum": [
+              "file",
+              "document",
+              "image",
+              "audio",
+              "video",
+              "dataset",
+              "archive",
+              "other"
+            ]
+          },
+          "media_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ControlCommand": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/control-command.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/control-command.schema.json",
         "title": "ControlCommand",
         "type": "object",
         "additionalProperties": false,
@@ -1326,22 +1470,26 @@
       },
       "RuntimeRequestEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/runtime-request-envelope.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/runtime-request-envelope.schema.json",
         "title": "RuntimeRequestEnvelope",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "request",
           "config"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "request": {
             "type": "object",
             "additionalProperties": false,
             "required": [
               "request_id",
               "request_type",
-              "tenant",
+              "owner_scope",
               "actor",
               "input",
               "runtime_config_ref",
@@ -1362,22 +1510,46 @@
                   "system_event"
                 ]
               },
-              "tenant": {
+              "owner_scope": {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
                   "organization_id",
-                  "agent_id"
+                  "user_id",
+                  "agent_id",
+                  "runtime_id",
+                  "workspace_id"
                 ],
                 "properties": {
                   "organization_id": {
                     "type": "string",
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                   },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
                   "agent_id": {
                     "type": "string",
                     "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                   }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
                 }
               },
               "actor": {
@@ -1501,19 +1673,23 @@
       },
       "RuntimeOperationEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/runtime-operation-envelope.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/runtime-operation-envelope.schema.json",
         "title": "RuntimeOperationEnvelope",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "operation",
-          "tenant",
+          "owner_scope",
           "actor",
           "input",
           "trace",
           "created_at"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "operation": {
             "enum": [
               "health.detailed",
@@ -1545,22 +1721,46 @@
               "memory.apply"
             ]
           },
-          "tenant": {
+          "owner_scope": {
             "type": "object",
             "additionalProperties": false,
             "required": [
               "organization_id",
-              "agent_id"
+              "user_id",
+              "agent_id",
+              "runtime_id",
+              "workspace_id"
             ],
             "properties": {
               "organization_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
               "agent_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
             }
           },
           "actor": {
@@ -1622,41 +1822,69 @@
       },
       "RuntimeStreamEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/runtime-stream-envelope.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/runtime-stream-envelope.schema.json",
         "title": "RuntimeStreamEnvelope",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "operation",
-          "tenant",
+          "owner_scope",
           "actor",
           "input",
           "trace",
           "created_at"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "operation": {
             "enum": [
               "sessions.chat.stream",
               "runs.events"
             ]
           },
-          "tenant": {
+          "owner_scope": {
             "type": "object",
             "additionalProperties": false,
             "required": [
               "organization_id",
-              "agent_id"
+              "user_id",
+              "agent_id",
+              "runtime_id",
+              "workspace_id"
             ],
             "properties": {
               "organization_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
               "agent_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
             }
           },
           "actor": {
@@ -1718,7 +1946,7 @@
       },
       "RuntimeHeartbeat": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/runtime-heartbeat.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/runtime-heartbeat.schema.json",
         "title": "RuntimeHeartbeat",
         "type": "object",
         "additionalProperties": false,
@@ -1974,7 +2202,7 @@
       },
       "ResourceReport": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/resource-report.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/resource-report.schema.json",
         "title": "ResourceReport",
         "type": "object",
         "additionalProperties": false,
@@ -2176,15 +2404,60 @@
       },
       "CredentialResolution": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/credential-resolution.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/credential-resolution.schema.json",
         "title": "CredentialResolution",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
+          "owner_scope",
           "authorization",
           "credential"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
+          },
           "authorization": {
             "type": "object",
             "additionalProperties": false,
@@ -2249,13 +2522,14 @@
       },
       "MemoryProjection": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/memory-projection.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/memory-projection.schema.json",
         "title": "MemoryProjection",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
           "projection_id",
+          "owner_scope",
           "memory",
           "user",
           "included_note_ids",
@@ -2263,11 +2537,53 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
           },
           "projection_id": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "runtime_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "memory": {
             "type": "object",
@@ -2373,13 +2689,15 @@
       },
       "ChannelEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-envelope.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-envelope.schema.json",
         "title": "ChannelEnvelope",
         "oneOf": [
           {
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "schema_version",
+              "owner_scope",
               "message_id",
               "channel",
               "channel_account_id",
@@ -2390,6 +2708,50 @@
               "trace"
             ],
             "properties": {
+              "schema_version": {
+                "const": "2.0"
+              },
+              "owner_scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organization_id",
+                  "user_id",
+                  "agent_id",
+                  "workspace_id"
+                ],
+                "properties": {
+                  "organization_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
+                }
+              },
               "message_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -2420,10 +2782,6 @@
                   "display_name": {
                     "type": "string",
                     "maxLength": 200
-                  },
-                  "tenant_hint": {
-                    "type": "string",
-                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                   },
                   "roles": {
                     "type": "array",
@@ -2482,6 +2840,8 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "schema_version",
+              "owner_scope",
               "outbound_id",
               "channel",
               "conversation",
@@ -2489,6 +2849,51 @@
               "trace"
             ],
             "properties": {
+              "schema_version": {
+                "const": "2.0"
+              },
+              "owner_scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organization_id",
+                  "user_id",
+                  "agent_id",
+                  "workspace_id",
+                  "conversation_id"
+                ],
+                "properties": {
+                  "organization_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
+                }
+              },
               "outbound_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -2540,11 +2945,58 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "schema_version",
+              "owner_scope",
               "outbound_id",
               "status",
               "trace"
             ],
             "properties": {
+              "schema_version": {
+                "const": "2.0"
+              },
+              "owner_scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organization_id",
+                  "user_id",
+                  "agent_id",
+                  "workspace_id",
+                  "conversation_id"
+                ],
+                "properties": {
+                  "organization_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
+                }
+              },
               "outbound_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -2597,12 +3049,13 @@
       },
       "ChannelIngress": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-ingress.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-ingress.schema.json",
         "title": "ChannelIngress",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
+          "owner_scope",
           "ingress_id",
           "binding_id",
           "channel",
@@ -2616,7 +3069,48 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "ingress_id": {
             "type": "string",
@@ -2796,12 +3290,13 @@
       },
       "ChannelIngressAck": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-ingress-ack.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-ingress-ack.schema.json",
         "title": "ChannelIngressAck",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
+          "owner_scope",
           "ingress_id",
           "status",
           "acknowledged_at",
@@ -2809,7 +3304,48 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "ingress_id": {
             "type": "string",
@@ -2855,7 +3391,7 @@
       },
       "ChannelDeliveryLeaseRequest": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-delivery-lease-request.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-delivery-lease-request.schema.json",
         "title": "ChannelDeliveryLeaseRequest",
         "type": "object",
         "additionalProperties": false,
@@ -2870,7 +3406,7 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
           },
           "worker_id": {
             "type": "string",
@@ -2939,7 +3475,7 @@
       },
       "ChannelDeliveryBatch": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-delivery-batch.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-delivery-batch.schema.json",
         "title": "ChannelDeliveryBatch",
         "type": "object",
         "additionalProperties": false,
@@ -2953,7 +3489,7 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
           },
           "lease_id": {
             "type": "string",
@@ -2970,6 +3506,7 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
+                "owner_scope",
                 "outbound_id",
                 "binding_id",
                 "channel",
@@ -2982,6 +3519,48 @@
                 "trace"
               ],
               "properties": {
+                "owner_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organization_id",
+                    "user_id",
+                    "agent_id",
+                    "workspace_id",
+                    "conversation_id"
+                  ],
+                  "properties": {
+                    "organization_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "agent_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "runtime_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "workspace_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "conversation_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "dependentRequired": {
+                    "conversation_id": [
+                      "workspace_id"
+                    ]
+                  }
+                },
                 "outbound_id": {
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -3171,12 +3750,13 @@
       },
       "ChannelDeliveryReceipt": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-delivery-receipt.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-delivery-receipt.schema.json",
         "title": "ChannelDeliveryReceipt",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
+          "owner_scope",
           "outbound_id",
           "binding_id",
           "lease_token",
@@ -3187,7 +3767,49 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id",
+              "conversation_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "outbound_id": {
             "type": "string",
@@ -3254,12 +3876,13 @@
       },
       "ChannelHealthReport": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-health-report.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-health-report.schema.json",
         "title": "ChannelHealthReport",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
+          "owner_scope",
           "binding_id",
           "channel",
           "worker_id",
@@ -3270,7 +3893,48 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "binding_id": {
             "type": "string",
@@ -3347,23 +4011,25 @@
       },
       "ChannelCredentialResolution": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-credential-resolution.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-credential-resolution.schema.json",
         "title": "ChannelCredentialResolution",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "binding",
           "credential"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "binding": {
             "type": "object",
             "additionalProperties": false,
             "required": [
               "id",
-              "organization_id",
-              "user_id",
-              "agent_id",
+              "owner_scope",
               "channel",
               "channel_account_id",
               "metadata"
@@ -3373,17 +4039,46 @@
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               },
-              "organization_id": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-              },
-              "user_id": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-              },
-              "agent_id": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              "owner_scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organization_id",
+                  "user_id",
+                  "agent_id",
+                  "workspace_id"
+                ],
+                "properties": {
+                  "organization_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
+                }
               },
               "channel": {
                 "enum": [
@@ -3427,7 +4122,7 @@
       },
       "ChannelBindingInventoryRequest": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory-request.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-binding-inventory-request.schema.json",
         "title": "ChannelBindingInventoryRequest",
         "type": "object",
         "additionalProperties": false,
@@ -3439,7 +4134,7 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
           },
           "worker_id": {
             "type": "string",
@@ -3485,7 +4180,7 @@
       },
       "ChannelBindingInventory": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/channel-binding-inventory.schema.json",
         "title": "ChannelBindingInventory",
         "type": "object",
         "additionalProperties": false,
@@ -3498,7 +4193,7 @@
         ],
         "properties": {
           "schema_version": {
-            "const": "1.0"
+            "const": "2.0"
           },
           "worker_id": {
             "type": "string",
@@ -3512,9 +4207,7 @@
               "additionalProperties": false,
               "required": [
                 "id",
-                "organization_id",
-                "user_id",
-                "agent_id",
+                "owner_scope",
                 "channel",
                 "channel_account_id",
                 "status",
@@ -3526,17 +4219,46 @@
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                 },
-                "organization_id": {
-                  "type": "string",
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                },
-                "user_id": {
-                  "type": "string",
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                },
-                "agent_id": {
-                  "type": "string",
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                "owner_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organization_id",
+                    "user_id",
+                    "agent_id",
+                    "workspace_id"
+                  ],
+                  "properties": {
+                    "organization_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "agent_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "runtime_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "workspace_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "conversation_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "dependentRequired": {
+                    "conversation_id": [
+                      "workspace_id"
+                    ]
+                  }
                 },
                 "channel": {
                   "enum": [
@@ -3608,19 +4330,24 @@
       },
       "IntegrationRequestEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/integration-request-envelope.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/integration-request-envelope.schema.json",
         "title": "IntegrationRequestEnvelope",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "request"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "request": {
             "type": "object",
             "additionalProperties": false,
             "required": [
               "request_id",
+              "owner_scope",
               "integration_id",
               "capability",
               "input",
@@ -3631,6 +4358,48 @@
               "request_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "owner_scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organization_id",
+                  "user_id",
+                  "agent_id",
+                  "runtime_id",
+                  "workspace_id"
+                ],
+                "properties": {
+                  "organization_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "agent_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "runtime_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "conversation_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  }
+                },
+                "dependentRequired": {
+                  "conversation_id": [
+                    "workspace_id"
+                  ]
+                }
               },
               "integration_id": {
                 "type": "string",
@@ -3680,20 +4449,67 @@
       },
       "IntegrationResult": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://contracts.bairui.ai/v1/integration-result.schema.json",
+        "$id": "https://contracts.bairui.ai/v2/integration-result.schema.json",
         "title": "IntegrationResult",
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "schema_version",
           "request_id",
+          "owner_scope",
           "integration_id",
           "status",
           "trace"
         ],
         "properties": {
+          "schema_version": {
+            "const": "2.0"
+          },
           "request_id": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "runtime_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "integration_id": {
             "type": "string",
@@ -3716,7 +4532,101 @@
             "maxItems": 100,
             "items": {
               "type": "object",
-              "additionalProperties": true
+              "additionalProperties": false,
+              "required": [
+                "schema_version",
+                "artifact_id",
+                "owner_scope",
+                "kind",
+                "media_type",
+                "size_bytes",
+                "sha256",
+                "created_at"
+              ],
+              "properties": {
+                "schema_version": {
+                  "const": "1.0"
+                },
+                "artifact_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "owner_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organization_id",
+                    "user_id",
+                    "agent_id"
+                  ],
+                  "properties": {
+                    "organization_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "agent_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "runtime_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "workspace_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    },
+                    "conversation_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "dependentRequired": {
+                    "conversation_id": [
+                      "workspace_id"
+                    ]
+                  }
+                },
+                "kind": {
+                  "enum": [
+                    "file",
+                    "document",
+                    "image",
+                    "audio",
+                    "video",
+                    "dataset",
+                    "archive",
+                    "other"
+                  ]
+                },
+                "media_type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "size_bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "metadata": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           },
           "usage": {

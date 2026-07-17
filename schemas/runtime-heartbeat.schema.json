@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/runtime-heartbeat.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/runtime-heartbeat.schema.json",
   "title": "RuntimeHeartbeat",
   "type": "object",
   "additionalProperties": false,

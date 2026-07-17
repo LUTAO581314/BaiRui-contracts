@@ -1,20 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v2/channel-ingress-ack.schema.json",
-  "title": "ChannelIngressAck",
+  "$id": "https://contracts.bairui.ai/v2/artifact-pointer.schema.json",
+  "title": "ArtifactPointer",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
+    "artifact_id",
     "owner_scope",
-    "ingress_id",
-    "status",
-    "acknowledged_at",
-    "trace"
+    "kind",
+    "media_type",
+    "size_bytes",
+    "sha256",
+    "created_at"
   ],
   "properties": {
     "schema_version": {
-      "const": "2.0"
+      "const": "1.0"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
     "owner_scope": {
       "type": "object",
@@ -22,8 +28,7 @@
       "required": [
         "organization_id",
         "user_id",
-        "agent_id",
-        "workspace_id"
+        "agent_id"
       ],
       "properties": {
         "organization_id": {
@@ -57,44 +62,39 @@
         ]
       }
     },
-    "ingress_id": {
-      "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-    },
-    "status": {
+    "kind": {
       "enum": [
-        "accepted",
-        "duplicate",
-        "rejected"
+        "file",
+        "document",
+        "image",
+        "audio",
+        "video",
+        "dataset",
+        "archive",
+        "other"
       ]
     },
-    "error_code": {
+    "media_type": {
       "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+      "minLength": 1,
+      "maxLength": 200
     },
-    "acknowledged_at": {
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "trace": {
+    "metadata": {
       "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "correlation_id"
-      ],
-      "properties": {
-        "correlation_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-        },
-        "parent_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-        },
-        "span_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-        }
+      "additionalProperties": {
+        "type": "string"
       }
     }
   }

@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.0.0
+
+- Add the canonical Organization, User, Agent, Runtime, Workspace, and
+  Conversation owner hierarchy.
+- Require `owner_scope` on Runtime, integration, memory, credential, Artifact,
+  and per-binding Channel data-plane contracts.
+- Replace the duplicated Runtime `tenant` object with `owner_scope`; require
+  Runtime and Workspace identity on Runtime envelopes.
+- Bind session operations to `owner_scope.conversation_id` and reject Actor or
+  conversation ownership mismatches.
+- Add strict logical `ArtifactPointer` contracts and reject cross-owner
+  artifacts in integration results.
+- Upgrade the Channel protocol to `2.0`; v1 payloads fail closed.
+- Move generated JSON Schema identifiers from the `/v1/` namespace to `/v2/`.
+
 ## 1.2.1
 
 - Allow an authenticated Server Agent to submit an empty resource report as

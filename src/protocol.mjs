@@ -1,6 +1,15 @@
-export const CONTRACTS_VERSION = "1.2.1";
+export const CONTRACTS_VERSION = "2.0.0";
 export const CONTROL_PROTOCOL_VERSION = "1.0";
-export const CHANNEL_PROTOCOL_VERSION = "1.0";
+export const CHANNEL_PROTOCOL_VERSION = "2.0";
+export const RUNTIME_PROTOCOL_VERSION = "2.0";
+export const DATA_PROTOCOL_VERSION = "2.0";
+
+export const IDENTITY_KINDS = Object.freeze([
+  "organization", "user", "agent", "runtime", "workspace", "conversation"
+]);
+export const ARTIFACT_KINDS = Object.freeze([
+  "file", "document", "image", "audio", "video", "dataset", "archive", "other"
+]);
 
 export const CHANNELS = Object.freeze(["web", "cli", "feishu", "wechat", "qq"]);
 export const CHANNEL_CONNECTION_STATUSES = Object.freeze(["pending", "connected", "degraded", "error", "disconnected", "disabled"]);
