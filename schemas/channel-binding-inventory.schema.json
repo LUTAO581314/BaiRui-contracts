@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory.schema.json",
+  "title": "ChannelBindingInventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "worker_id",
+    "bindings",
+    "generated_at",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "worker_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "bindings": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "organization_id",
+          "user_id",
+          "agent_id",
+          "channel",
+          "channel_account_id",
+          "status",
+          "connection_generation",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "organization_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "user_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "agent_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "channel": {
+            "enum": [
+              "web",
+              "cli",
+              "feishu",
+              "wechat",
+              "qq"
+            ]
+          },
+          "channel_account_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "connected",
+              "degraded",
+              "error",
+              "disconnected",
+              "disabled",
+              "unconfigured",
+              "unavailable"
+            ]
+          },
+          "connection_generation": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "callback_path": {
+            "type": "string",
+            "pattern": "^/",
+            "maxLength": 1000
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correlation_id"
+      ],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "parent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        }
+      }
+    }
+  }
+}

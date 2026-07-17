@@ -612,6 +612,53 @@ export const channelCredentialResolutionSchema = document("channel-credential-re
   }
 });
 
+export const channelBindingInventoryRequestSchema = document("channel-binding-inventory-request", {
+  title: "ChannelBindingInventoryRequest",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "worker_id", "channels", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    worker_id: identifier,
+    channels: { type: "array", minItems: 1, maxItems: CHANNELS.length, uniqueItems: true, items: { enum: CHANNELS } },
+    trace
+  }
+});
+
+export const channelBindingInventorySchema = document("channel-binding-inventory", {
+  title: "ChannelBindingInventory",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "worker_id", "bindings", "generated_at", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    worker_id: identifier,
+    bindings: {
+      type: "array",
+      maxItems: 10000,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["id", "organization_id", "user_id", "agent_id", "channel", "channel_account_id", "status", "connection_generation", "updated_at"],
+        properties: {
+          id: identifier,
+          organization_id: identifier,
+          user_id: identifier,
+          agent_id: identifier,
+          channel: { enum: CHANNELS },
+          channel_account_id: identifier,
+          status: { enum: [...CHANNEL_CONNECTION_STATUSES, "unconfigured", "unavailable"] },
+          connection_generation: { type: "integer", minimum: 0 },
+          callback_path: { type: "string", pattern: "^/", maxLength: 1000 },
+          updated_at: timestamp
+        }
+      }
+    },
+    generated_at: timestamp,
+    trace
+  }
+});
+
 const integrationRequest = {
   type: "object",
   additionalProperties: false,
@@ -662,6 +709,8 @@ export const SCHEMAS = Object.freeze({
   "channel-delivery-receipt": channelDeliveryReceiptSchema,
   "channel-health-report": channelHealthReportSchema,
   "channel-credential-resolution": channelCredentialResolutionSchema,
+  "channel-binding-inventory-request": channelBindingInventoryRequestSchema,
+  "channel-binding-inventory": channelBindingInventorySchema,
   "integration-request-envelope": integrationRequestEnvelopeSchema,
   "integration-result": integrationResultSchema
 });
@@ -675,6 +724,7 @@ export const OPENAPI_PATHS = Object.freeze({
   "/api/internal/channels/deliveries/lease": ["post", "channel-delivery-lease-request", "channel-delivery-batch", 200],
   "/api/internal/channels/delivery-receipts": ["post", "channel-delivery-receipt", null, 202],
   "/api/internal/channels/health": ["post", "channel-health-report", null, 202],
+  "/api/internal/channels/bindings": ["post", "channel-binding-inventory-request", "channel-binding-inventory", 200],
   "/api/internal/control-plane/heartbeats": ["post", "runtime-heartbeat"],
   "/api/internal/control-plane/resources": ["post", "resource-report"]
 });

@@ -5241,6 +5241,47 @@ values: {
 }
 }
 
+export interface ChannelBindingInventoryRequest {
+schema_version: "1.0"
+worker_id: string
+/**
+ * @minItems 1
+ * @maxItems 5
+ */
+channels: [("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]|[("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq"), ("web" | "cli" | "feishu" | "wechat" | "qq")]
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ChannelBindingInventory {
+schema_version: "1.0"
+worker_id: string
+/**
+ * @maxItems 10000
+ */
+bindings: {
+id: string
+organization_id: string
+user_id: string
+agent_id: string
+channel: ("web" | "cli" | "feishu" | "wechat" | "qq")
+channel_account_id: string
+status: ("pending" | "connected" | "degraded" | "error" | "disconnected" | "disabled" | "unconfigured" | "unavailable")
+connection_generation: number
+callback_path?: string
+updated_at: string
+}[]
+generated_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
 export interface IntegrationRequestEnvelope {
 request: {
 request_id: string
