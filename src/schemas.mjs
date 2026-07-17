@@ -310,7 +310,7 @@ export const resourceReportSchema = document("resource-report", {
     serverId: identifier,
     samples: {
       type: "array",
-      minItems: 1,
+      minItems: 0,
       maxItems: 500,
       items: {
         type: "object",

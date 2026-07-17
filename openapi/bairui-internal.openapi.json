@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "BaiRui Internal Contracts",
-    "version": "1.2.0"
+    "version": "1.2.1"
   },
   "paths": {
     "/v1/runtime/requests": {
@@ -1989,7 +1989,7 @@
           },
           "samples": {
             "type": "array",
-            "minItems": 1,
+            "minItems": 0,
             "maxItems": 500,
             "items": {
               "type": "object",
