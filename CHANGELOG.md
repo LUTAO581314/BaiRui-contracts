@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+- Allow an authenticated Server Agent to submit an empty resource report as
+  a node heartbeat before any user Agent has been provisioned.
+
 ## 1.2.0
 
 - Add a metadata-only Channel binding inventory request and response so

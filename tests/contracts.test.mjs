@@ -17,6 +17,7 @@ import {
   validateChannelIngressAck,
   validateControlCommand,
   validateCredentialResolution,
+  validateResourceReport,
   validateRuntimeHeartbeat,
   validateRuntimeRequestEnvelope
 } from "../src/index.mjs";
@@ -75,6 +76,12 @@ test("telemetry accepts aggregates and rejects user content", () => {
   const heartbeat = { organizationId: "org_1", userId: "user_1", agentId: "agent_1", runtimeId: "runtime_1", sequence: 1, status: "healthy", queueDepth: 0, activeRuns: 1, failedRuns: 0, observedAt: now, components: [component, { ...component, moduleId: "bairui.runtime-boundary" }], events: [] };
   assert.equal(validateRuntimeHeartbeat(heartbeat).activeRuns, 1);
   assert.throws(() => validateRuntimeHeartbeat({ ...heartbeat, prompt: "must-not-pass" }), ContractValidationError);
+});
+
+test("resource telemetry accepts an empty fleet heartbeat", () => {
+  const report = { serverId: "server_1", samples: [] };
+  assert.equal(validateResourceReport(report).samples.length, 0);
+  assert.throws(() => validateResourceReport({ ...report, status: "healthy" }), ContractValidationError);
 });
 
 test("credential contracts validate structure without echoing values in errors", () => {
