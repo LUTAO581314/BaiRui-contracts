@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/memory-projection.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/memory-projection.schema.json",
   "title": "MemoryProjection",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "projection_id",
+    "owner_scope",
     "memory",
     "user",
     "included_note_ids",
@@ -14,11 +15,53 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "2.0"
     },
     "projection_id": {
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "owner_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organization_id",
+        "user_id",
+        "agent_id",
+        "runtime_id",
+        "workspace_id"
+      ],
+      "properties": {
+        "organization_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "user_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "agent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "runtime_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "workspace_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "conversation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        }
+      },
+      "dependentRequired": {
+        "conversation_id": [
+          "workspace_id"
+        ]
+      }
     },
     "memory": {
       "type": "object",

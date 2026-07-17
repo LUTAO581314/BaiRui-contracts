@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
   CONTROL_ACTIONS,
   ContractValidationError,
+  validateAgentOwnerScope,
+  validateArtifactPointer,
   validateChannelBindingInventory,
   validateChannelBindingInventoryRequest,
   validateChannelCredentialResolution,
@@ -17,14 +19,20 @@ import {
   validateChannelIngressAck,
   validateControlCommand,
   validateCredentialResolution,
+  validateIntegrationRequestEnvelope,
+  validateIntegrationResult,
+  validateMemoryProjection,
   validateResourceReport,
   validateRuntimeHeartbeat,
+  validateRuntimeOperationEnvelope,
   validateRuntimeRequestEnvelope
 } from "../src/index.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const now = new Date().toISOString();
 const later = new Date(Date.now() + 60_000).toISOString();
+const agentScope = { organization_id: "org_1", user_id: "user_1", agent_id: "agent_1" };
+const runtimeScope = { ...agentScope, runtime_id: "runtime_1", workspace_id: "workspace_1" };
 
 function command(action, args, extra = {}) {
   return {
@@ -58,7 +66,7 @@ test("runtime requests bind the request to the supplied config", () => {
   const request = {
     request_id: "request_1",
     request_type: "message",
-    tenant: { organization_id: "org_1", agent_id: "agent_1" },
+    owner_scope: runtimeScope,
     actor: { user_id: "user_1", roles: ["user"] },
     channel_context: { channel: "web" },
     input: { content: "hello" },
@@ -67,8 +75,68 @@ test("runtime requests bind the request to the supplied config", () => {
     created_at: now
   };
   const config = { config_id: "config_1", model_policy: {}, tool_policy: {}, memory_policy: {}, approval_policy: {}, storage_policy: {}, integration_policy: {} };
-  assert.equal(validateRuntimeRequestEnvelope({ request, config }).request.request_id, "request_1");
-  assert.throws(() => validateRuntimeRequestEnvelope({ request, config: { ...config, config_id: "config_2" } }), ContractValidationError);
+  const envelope = { schema_version: "2.0", request, config };
+  assert.equal(validateRuntimeRequestEnvelope(envelope).request.request_id, "request_1");
+  assert.throws(() => validateRuntimeRequestEnvelope({ ...envelope, config: { ...config, config_id: "config_2" } }), ContractValidationError);
+  assert.throws(() => validateRuntimeRequestEnvelope({ ...envelope, request: { ...request, actor: { user_id: "user_2" } } }), ContractValidationError);
+  assert.throws(() => validateRuntimeRequestEnvelope({ ...envelope, schema_version: "1.0" }), ContractValidationError);
+  assert.throws(() => validateRuntimeRequestEnvelope({ ...envelope, request: { ...request, owner_scope: undefined, tenant: { organization_id: "org_1", agent_id: "agent_1" } } }), ContractValidationError);
+});
+
+test("owner scope freezes the identity hierarchy and Runtime conversation binding", () => {
+  assert.equal(validateAgentOwnerScope(agentScope).agent_id, "agent_1");
+  assert.throws(() => validateAgentOwnerScope({ ...agentScope, conversation_id: "conversation_1" }), ContractValidationError);
+  const operation = {
+    schema_version: "2.0",
+    operation: "sessions.chat",
+    owner_scope: { ...runtimeScope, conversation_id: "session_1" },
+    actor: { user_id: "user_1", roles: ["user"] },
+    channel_context: { channel: "web" },
+    input: { session_id: "session_1", body: { message: "hello" } },
+    trace: { correlation_id: "request_1" },
+    created_at: now
+  };
+  assert.equal(validateRuntimeOperationEnvelope(operation).owner_scope.conversation_id, "session_1");
+  assert.throws(() => validateRuntimeOperationEnvelope({ ...operation, owner_scope: { ...runtimeScope, conversation_id: "session_2" } }), ContractValidationError);
+});
+
+test("artifact pointers and integration results cannot cross Agent owners", () => {
+  const artifact = {
+    schema_version: "1.0",
+    artifact_id: "artifact_1",
+    owner_scope: agentScope,
+    kind: "document",
+    media_type: "text/markdown",
+    size_bytes: 12,
+    sha256: "a".repeat(64),
+    created_at: now
+  };
+  assert.equal(validateArtifactPointer(artifact).artifact_id, "artifact_1");
+  const result = { schema_version: "2.0", request_id: "request_1", owner_scope: runtimeScope, integration_id: "firecrawl", status: "completed", artifacts: [artifact], trace: { correlation_id: "request_1" } };
+  assert.equal(validateIntegrationResult(result).artifacts.length, 1);
+  assert.throws(() => validateIntegrationResult({ ...result, artifacts: [{ ...artifact, owner_scope: { ...agentScope, agent_id: "agent_2" } }] }), ContractValidationError);
+});
+
+test("integration and memory data planes require the complete Runtime owner scope", () => {
+  const integration = {
+    schema_version: "2.0",
+    request: {
+      request_id: "request_1",
+      owner_scope: runtimeScope,
+      integration_id: "firecrawl",
+      capability: "scrape",
+      input: { url: "https://example.test" },
+      timeout_ms: 1000,
+      trace: { correlation_id: "request_1" }
+    }
+  };
+  assert.equal(validateIntegrationRequestEnvelope(integration).request.integration_id, "firecrawl");
+  assert.throws(() => validateIntegrationRequestEnvelope({ ...integration, request: { ...integration.request, owner_scope: agentScope } }), ContractValidationError);
+
+  const target = { entries: [], char_count: 0, limit: 100 };
+  const projection = { schema_version: "2.0", projection_id: "projection_1", owner_scope: runtimeScope, memory: target, user: target, included_note_ids: [], excluded_note_ids: [] };
+  assert.equal(validateMemoryProjection(projection).owner_scope.workspace_id, "workspace_1");
+  assert.throws(() => validateMemoryProjection({ ...projection, owner_scope: agentScope }), ContractValidationError);
 });
 
 test("telemetry accepts aggregates and rejects user content", () => {
@@ -85,7 +153,7 @@ test("resource telemetry accepts an empty fleet heartbeat", () => {
 });
 
 test("credential contracts validate structure without echoing values in errors", () => {
-  const value = { authorization: { id: "auth_1", service: "firecrawl", label: "Personal Firecrawl", authType: "api_key", endpointUrl: "https://api.firecrawl.dev", metadata: {} }, credential: { secret: "secret-value" } };
+  const value = { schema_version: "2.0", owner_scope: agentScope, authorization: { id: "auth_1", service: "firecrawl", label: "Personal Firecrawl", authType: "api_key", endpointUrl: "https://api.firecrawl.dev", metadata: {} }, credential: { secret: "secret-value" } };
   assert.equal(validateCredentialResolution(value).authorization.service, "firecrawl");
   try { validateCredentialResolution({ ...value, unexpected: value.credential.secret }); }
   catch (error) { assert.doesNotMatch(JSON.stringify(error), /secret-value/); return; }
@@ -95,7 +163,8 @@ test("credential contracts validate structure without echoing values in errors",
 test("channel ingress and acknowledgements carry stable deduplication identities", () => {
   const trace = { correlation_id: "channel_trace_1" };
   const ingress = {
-    schema_version: "1.0",
+    schema_version: "2.0",
+    owner_scope: { ...agentScope, workspace_id: "workspace_1" },
     ingress_id: "ingress_1",
     binding_id: "binding_1",
     channel: "feishu",
@@ -109,15 +178,16 @@ test("channel ingress and acknowledgements carry stable deduplication identities
     trace
   };
   assert.equal(validateChannelIngress(ingress).message_id, "message_1");
-  assert.equal(validateChannelIngressAck({ schema_version: "1.0", ingress_id: "ingress_1", status: "duplicate", acknowledged_at: now, trace }).status, "duplicate");
+  assert.equal(validateChannelIngressAck({ schema_version: "2.0", owner_scope: ingress.owner_scope, ingress_id: "ingress_1", status: "duplicate", acknowledged_at: now, trace }).status, "duplicate");
   assert.throws(() => validateChannelIngress({ ...ingress, organization_id: "untrusted_hint" }), ContractValidationError);
 });
 
 test("channel delivery leases bind receipts to attempts and lease tokens", () => {
   const trace = { correlation_id: "delivery_trace_1" };
-  const request = { schema_version: "1.0", worker_id: "worker_1", channels: ["feishu", "qq"], limit: 10, lease_seconds: 30, requested_at: now, trace };
+  const request = { schema_version: "2.0", worker_id: "worker_1", channels: ["feishu", "qq"], limit: 10, lease_seconds: 30, requested_at: now, trace };
   assert.equal(validateChannelDeliveryLeaseRequest(request).limit, 10);
   const delivery = {
+    owner_scope: { ...agentScope, workspace_id: "workspace_1", conversation_id: "conversation_1" },
     outbound_id: "outbound_1",
     binding_id: "binding_1",
     channel: "feishu",
@@ -129,12 +199,12 @@ test("channel delivery leases bind receipts to attempts and lease tokens", () =>
     available_at: now,
     trace
   };
-  assert.equal(validateChannelDeliveryBatch({ schema_version: "1.0", lease_id: "lease_1", worker_id: "worker_1", deliveries: [delivery], leased_until: later, trace }).deliveries.length, 1);
-  assert.equal(validateChannelDeliveryReceipt({ schema_version: "1.0", outbound_id: "outbound_1", binding_id: "binding_1", lease_token: "lease_token_1", status: "delivered", attempt: 1, channel_message_id: "message_2", observed_at: now, trace }).status, "delivered");
+  assert.equal(validateChannelDeliveryBatch({ schema_version: "2.0", lease_id: "lease_1", worker_id: "worker_1", deliveries: [delivery], leased_until: later, trace }).deliveries.length, 1);
+  assert.equal(validateChannelDeliveryReceipt({ schema_version: "2.0", owner_scope: delivery.owner_scope, outbound_id: "outbound_1", binding_id: "binding_1", lease_token: "lease_token_1", status: "delivered", attempt: 1, channel_message_id: "message_2", observed_at: now, trace }).status, "delivered");
 });
 
 test("channel health cannot claim connected without bidirectional capability or leak data", () => {
-  const report = { schema_version: "1.0", binding_id: "binding_1", channel: "wechat", worker_id: "worker_1", sequence: 1, status: "connected", capabilities: ["receive", "send", "webhook"], adapter_version: "1.0.0", observed_at: now };
+  const report = { schema_version: "2.0", owner_scope: { ...agentScope, workspace_id: "workspace_1" }, binding_id: "binding_1", channel: "wechat", worker_id: "worker_1", sequence: 1, status: "connected", capabilities: ["receive", "send", "webhook"], adapter_version: "1.0.0", observed_at: now };
   assert.equal(validateChannelHealthReport(report).status, "connected");
   assert.throws(() => validateChannelHealthReport({ ...report, capabilities: ["receive"] }), ContractValidationError);
   assert.throws(() => validateChannelHealthReport({ ...report, secret: "must-not-pass" }), ContractValidationError);
@@ -143,25 +213,26 @@ test("channel health cannot claim connected without bidirectional capability or 
 
 test("channel credential resolution is binding scoped", () => {
   const resolution = {
-    binding: { id: "binding_1", organization_id: "org_1", user_id: "user_1", agent_id: "agent_1", channel: "qq", channel_account_id: "app_1", metadata: {} },
+    schema_version: "2.0",
+    binding: { id: "binding_1", owner_scope: { ...agentScope, workspace_id: "workspace_1" }, channel: "qq", channel_account_id: "app_1", metadata: {} },
     credential: { values: { appId: "app_1", token: "secret-value" } }
   };
-  assert.equal(validateChannelCredentialResolution(resolution).binding.agent_id, "agent_1");
+  assert.equal(validateChannelCredentialResolution(resolution).binding.owner_scope.agent_id, "agent_1");
   assert.throws(() => validateChannelCredentialResolution({ ...resolution, browser_visible: true }), ContractValidationError);
 });
 
 test("channel inventory exposes binding metadata without credentials or content", () => {
   const trace = { correlation_id: "inventory_trace_1" };
-  const request = { schema_version: "1.0", worker_id: "worker_1", channels: ["feishu", "wechat", "qq"], trace };
+  const request = { schema_version: "2.0", worker_id: "worker_1", channels: ["feishu", "wechat", "qq"], trace };
   assert.equal(validateChannelBindingInventoryRequest(request).worker_id, "worker_1");
-  const inventory = { schema_version: "1.0", worker_id: "worker_1", bindings: [{ id: "binding_1", organization_id: "org_1", user_id: "user_1", agent_id: "agent_1", channel: "wechat", channel_account_id: "app_1", status: "pending", connection_generation: 2, callback_path: "/callbacks/wechat/binding_1", updated_at: now }], generated_at: now, trace };
+  const inventory = { schema_version: "2.0", worker_id: "worker_1", bindings: [{ id: "binding_1", owner_scope: { ...agentScope, workspace_id: "workspace_1" }, channel: "wechat", channel_account_id: "app_1", status: "pending", connection_generation: 2, callback_path: "/callbacks/wechat/binding_1", updated_at: now }], generated_at: now, trace };
   assert.equal(validateChannelBindingInventory(inventory).bindings[0].connection_generation, 2);
   assert.throws(() => validateChannelBindingInventory({ ...inventory, bindings: [{ ...inventory.bindings[0], credential: { token: "must-not-pass" } }] }), ContractValidationError);
   assert.throws(() => validateChannelBindingInventory({ ...inventory, prompt: "must-not-pass" }), ContractValidationError);
 });
 
 test("OpenAPI, schemas, and generated declarations are committed", () => {
-  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
+  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/agent-owner-scope.schema.json", "schemas/artifact-pointer.schema.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
     assert.equal(fs.existsSync(path.join(root, relative)), true, relative);
   }
 });

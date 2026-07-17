@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/channel-binding-inventory.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/channel-binding-inventory.schema.json",
   "title": "ChannelBindingInventory",
   "type": "object",
   "additionalProperties": false,
@@ -13,7 +13,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "const": "2.0"
     },
     "worker_id": {
       "type": "string",
@@ -27,9 +27,7 @@
         "additionalProperties": false,
         "required": [
           "id",
-          "organization_id",
-          "user_id",
-          "agent_id",
+          "owner_scope",
           "channel",
           "channel_account_id",
           "status",
@@ -41,17 +39,46 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
-          "organization_id": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-          },
-          "user_id": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-          },
-          "agent_id": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          "owner_scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization_id",
+              "user_id",
+              "agent_id",
+              "workspace_id"
+            ],
+            "properties": {
+              "organization_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "user_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "agent_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "runtime_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "workspace_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              },
+              "conversation_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            },
+            "dependentRequired": {
+              "conversation_id": [
+                "workspace_id"
+              ]
+            }
           },
           "channel": {
             "enum": [

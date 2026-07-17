@@ -1,21 +1,25 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/runtime-request-envelope.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/runtime-request-envelope.schema.json",
   "title": "RuntimeRequestEnvelope",
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "request",
     "config"
   ],
   "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
     "request": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "request_id",
         "request_type",
-        "tenant",
+        "owner_scope",
         "actor",
         "input",
         "runtime_config_ref",
@@ -36,22 +40,46 @@
             "system_event"
           ]
         },
-        "tenant": {
+        "owner_scope": {
           "type": "object",
           "additionalProperties": false,
           "required": [
             "organization_id",
-            "agent_id"
+            "user_id",
+            "agent_id",
+            "runtime_id",
+            "workspace_id"
           ],
           "properties": {
             "organization_id": {
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
             },
+            "user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
             "agent_id": {
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "runtime_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "workspace_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "conversation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
             }
+          },
+          "dependentRequired": {
+            "conversation_id": [
+              "workspace_id"
+            ]
           }
         },
         "actor": {

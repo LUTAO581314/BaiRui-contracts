@@ -1,12 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/channel-envelope.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/channel-envelope.schema.json",
   "title": "ChannelEnvelope",
   "oneOf": [
     {
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "schema_version",
+        "owner_scope",
         "message_id",
         "channel",
         "channel_account_id",
@@ -17,6 +19,50 @@
         "trace"
       ],
       "properties": {
+        "schema_version": {
+          "const": "2.0"
+        },
+        "owner_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organization_id",
+            "user_id",
+            "agent_id",
+            "workspace_id"
+          ],
+          "properties": {
+            "organization_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "agent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "runtime_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "workspace_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "conversation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          },
+          "dependentRequired": {
+            "conversation_id": [
+              "workspace_id"
+            ]
+          }
+        },
         "message_id": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -47,10 +93,6 @@
             "display_name": {
               "type": "string",
               "maxLength": 200
-            },
-            "tenant_hint": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
             },
             "roles": {
               "type": "array",
@@ -109,6 +151,8 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "schema_version",
+        "owner_scope",
         "outbound_id",
         "channel",
         "conversation",
@@ -116,6 +160,51 @@
         "trace"
       ],
       "properties": {
+        "schema_version": {
+          "const": "2.0"
+        },
+        "owner_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organization_id",
+            "user_id",
+            "agent_id",
+            "workspace_id",
+            "conversation_id"
+          ],
+          "properties": {
+            "organization_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "agent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "runtime_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "workspace_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "conversation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          },
+          "dependentRequired": {
+            "conversation_id": [
+              "workspace_id"
+            ]
+          }
+        },
         "outbound_id": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -167,11 +256,58 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "schema_version",
+        "owner_scope",
         "outbound_id",
         "status",
         "trace"
       ],
       "properties": {
+        "schema_version": {
+          "const": "2.0"
+        },
+        "owner_scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organization_id",
+            "user_id",
+            "agent_id",
+            "workspace_id",
+            "conversation_id"
+          ],
+          "properties": {
+            "organization_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "user_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "agent_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "runtime_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "workspace_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "conversation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          },
+          "dependentRequired": {
+            "conversation_id": [
+              "workspace_id"
+            ]
+          }
+        },
         "outbound_id": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"

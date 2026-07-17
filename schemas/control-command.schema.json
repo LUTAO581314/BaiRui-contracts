@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v1/control-command.schema.json",
+  "$id": "https://contracts.bairui.ai/v2/control-command.schema.json",
   "title": "ControlCommand",
   "type": "object",
   "additionalProperties": false,
