@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0
+
+- Add owner-scoped request contracts for Runtime authorization resolution and
+  Channel binding credential resolution.
+- Document both request bodies in the generated internal OpenAPI contract.
+
 ## 2.0.0
 
 - Add the canonical Organization, User, Agent, Runtime, Workspace, and

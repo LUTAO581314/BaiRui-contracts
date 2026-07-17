@@ -416,6 +416,20 @@ export const credentialResolutionSchema = document("credential-resolution", {
   }
 });
 
+export const credentialResolutionRequestSchema = document("credential-resolution-request", {
+  title: "AgentCredentialResolutionRequest",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "owner_scope", "authorization_id", "expected_service", "trace"],
+  properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
+    owner_scope: ownerScope(["runtime_id", "workspace_id"]),
+    authorization_id: identifier,
+    expected_service: identifier,
+    trace
+  }
+});
+
 const projectionTarget = {
   type: "object",
   additionalProperties: false,
@@ -664,6 +678,20 @@ export const channelCredentialResolutionSchema = document("channel-credential-re
   }
 });
 
+export const channelCredentialResolutionRequestSchema = document("channel-credential-resolution-request", {
+  title: "ChannelCredentialResolutionRequest",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "worker_id", "binding_id", "owner_scope", "trace"],
+  properties: {
+    schema_version: { const: CHANNEL_PROTOCOL_VERSION },
+    worker_id: identifier,
+    binding_id: identifier,
+    owner_scope: ownerScope(["workspace_id"]),
+    trace
+  }
+});
+
 export const channelBindingInventoryRequestSchema = document("channel-binding-inventory-request", {
   title: "ChannelBindingInventoryRequest",
   type: "object",
@@ -754,6 +782,7 @@ export const SCHEMAS = Object.freeze({
   "runtime-heartbeat": runtimeHeartbeatSchema,
   "resource-report": resourceReportSchema,
   "credential-resolution": credentialResolutionSchema,
+  "credential-resolution-request": credentialResolutionRequestSchema,
   "memory-projection": memoryProjectionSchema,
   "channel-envelope": channelEnvelopeSchema,
   "channel-ingress": channelIngressSchema,
@@ -763,6 +792,7 @@ export const SCHEMAS = Object.freeze({
   "channel-delivery-receipt": channelDeliveryReceiptSchema,
   "channel-health-report": channelHealthReportSchema,
   "channel-credential-resolution": channelCredentialResolutionSchema,
+  "channel-credential-resolution-request": channelCredentialResolutionRequestSchema,
   "channel-binding-inventory-request": channelBindingInventoryRequestSchema,
   "channel-binding-inventory": channelBindingInventorySchema,
   "integration-request-envelope": integrationRequestEnvelopeSchema,

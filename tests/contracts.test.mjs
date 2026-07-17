@@ -11,6 +11,7 @@ import {
   validateChannelBindingInventory,
   validateChannelBindingInventoryRequest,
   validateChannelCredentialResolution,
+  validateChannelCredentialResolutionRequest,
   validateChannelDeliveryBatch,
   validateChannelDeliveryLeaseRequest,
   validateChannelDeliveryReceipt,
@@ -19,6 +20,7 @@ import {
   validateChannelIngressAck,
   validateControlCommand,
   validateCredentialResolution,
+  validateCredentialResolutionRequest,
   validateIntegrationRequestEnvelope,
   validateIntegrationResult,
   validateMemoryProjection,
@@ -153,6 +155,9 @@ test("resource telemetry accepts an empty fleet heartbeat", () => {
 });
 
 test("credential contracts validate structure without echoing values in errors", () => {
+  const request = { schema_version: "2.0", owner_scope: runtimeScope, authorization_id: "auth_1", expected_service: "firecrawl", trace: { correlation_id: "request_1" } };
+  assert.equal(validateCredentialResolutionRequest(request).owner_scope.runtime_id, "runtime_1");
+  assert.throws(() => validateCredentialResolutionRequest({ ...request, owner_scope: agentScope }), ContractValidationError);
   const value = { schema_version: "2.0", owner_scope: agentScope, authorization: { id: "auth_1", service: "firecrawl", label: "Personal Firecrawl", authType: "api_key", endpointUrl: "https://api.firecrawl.dev", metadata: {} }, credential: { secret: "secret-value" } };
   assert.equal(validateCredentialResolution(value).authorization.service, "firecrawl");
   try { validateCredentialResolution({ ...value, unexpected: value.credential.secret }); }
@@ -212,6 +217,9 @@ test("channel health cannot claim connected without bidirectional capability or 
 });
 
 test("channel credential resolution is binding scoped", () => {
+  const request = { schema_version: "2.0", worker_id: "worker_1", binding_id: "binding_1", owner_scope: { ...agentScope, workspace_id: "workspace_1" }, trace: { correlation_id: "request_1" } };
+  assert.equal(validateChannelCredentialResolutionRequest(request).binding_id, "binding_1");
+  assert.throws(() => validateChannelCredentialResolutionRequest({ ...request, owner_scope: agentScope }), ContractValidationError);
   const resolution = {
     schema_version: "2.0",
     binding: { id: "binding_1", owner_scope: { ...agentScope, workspace_id: "workspace_1" }, channel: "qq", channel_account_id: "app_1", metadata: {} },
@@ -232,7 +240,7 @@ test("channel inventory exposes binding metadata without credentials or content"
 });
 
 test("OpenAPI, schemas, and generated declarations are committed", () => {
-  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/agent-owner-scope.schema.json", "schemas/artifact-pointer.schema.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
+  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/agent-owner-scope.schema.json", "schemas/artifact-pointer.schema.json", "schemas/credential-resolution-request.schema.json", "schemas/channel-credential-resolution-request.schema.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
     assert.equal(fs.existsSync(path.join(root, relative)), true, relative);
   }
 });

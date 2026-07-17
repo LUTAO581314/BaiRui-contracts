@@ -114,6 +114,7 @@ export const validateRuntimeStreamEnvelope = (value) => validateRuntimeOperation
 export const validateRuntimeHeartbeat = (value) => assertContract("runtime-heartbeat", value);
 export const validateResourceReport = (value) => assertContract("resource-report", value);
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
+export const validateCredentialResolutionRequest = (value) => assertContract("credential-resolution-request", value);
 export const validateMemoryProjection = (value) => assertContract("memory-projection", value);
 export const validateChannelEnvelope = (value) => assertContract("channel-envelope", value);
 export const validateChannelIngress = (value) => assertContract("channel-ingress", value);
@@ -135,6 +136,7 @@ export function validateChannelHealthReport(value) {
   return report;
 }
 export const validateChannelCredentialResolution = (value) => assertContract("channel-credential-resolution", value);
+export const validateChannelCredentialResolutionRequest = (value) => assertContract("channel-credential-resolution-request", value);
 export const validateChannelBindingInventoryRequest = (value) => assertContract("channel-binding-inventory-request", value);
 export const validateChannelBindingInventory = (value) => assertContract("channel-binding-inventory", value);
 export const validateIntegrationRequestEnvelope = (value) => assertContract("integration-request-envelope", value);

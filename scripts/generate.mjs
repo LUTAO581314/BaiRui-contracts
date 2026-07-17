@@ -59,6 +59,10 @@ export async function generatedArtifacts() {
         { name: "agentId", in: "path", required: true, schema: { type: "string" } },
         { name: "authorizationId", in: "path", required: true, schema: { type: "string" } }
       ],
+      requestBody: {
+        required: true,
+        content: { "application/json": { schema: { $ref: "#/components/schemas/AgentCredentialResolutionRequest" } } }
+      },
       responses: {
         200: { description: "Agent-scoped credential", content: { "application/json": { schema: { $ref: "#/components/schemas/CredentialResolution" } } } },
         401: { description: "Runtime identity rejected" },
@@ -71,6 +75,10 @@ export async function generatedArtifacts() {
       operationId: "resolveChannelBindingCredential",
       security: [{ machineSignature: [] }],
       parameters: [{ name: "bindingId", in: "path", required: true, schema: { type: "string" } }],
+      requestBody: {
+        required: true,
+        content: { "application/json": { schema: { $ref: "#/components/schemas/ChannelCredentialResolutionRequest" } } }
+      },
       responses: {
         200: { description: "Channel Worker scoped credential", content: { "application/json": { schema: { $ref: "#/components/schemas/ChannelCredentialResolution" } } } },
         401: { description: "Channel Worker identity rejected" },
