@@ -53,4 +53,3 @@
 - Add fixed Hermes management operation names for provider, model, tools, skills, MCP, profiles, cron, diagnostics, analytics, and controlled files.
 - Add Agent-scoped Scene Snapshot, Scene Patch, and Scene Intent contracts.
 - Add the `hermes-dashboard` resource role for the separately supervised Hermes management service.
-

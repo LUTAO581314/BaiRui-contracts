@@ -878,4 +878,3 @@ export const OPENAPI_PATHS = Object.freeze({
 });
 
 export { idPattern, identifier, timestamp, stringMap };
-

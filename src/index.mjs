@@ -172,4 +172,3 @@ export {
   RUNTIME_STREAM_OPERATIONS,
   SCHEMAS
 };
-

@@ -4946,4 +4946,3 @@ export type RuntimeStreamOperation = RuntimeStreamEnvelope["operation"];
 export type ModuleLayer = RuntimeHeartbeat["components"][number]["layer"];
 
 export type ModuleStatus = RuntimeHeartbeat["status"];
-

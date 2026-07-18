@@ -79,4 +79,3 @@ export const RUNTIME_OPERATIONS = Object.freeze([
 export const RUNTIME_STREAM_OPERATIONS = Object.freeze(["sessions.chat.stream", "runs.events"]);
 export const MODULE_LAYERS = Object.freeze(["core-runtime", "service-integration", "data-storage", "channel-bridge", "ui-exposure"]);
 export const MODULE_STATUSES = Object.freeze(["healthy", "degraded", "unhealthy", "unknown"]);
-
