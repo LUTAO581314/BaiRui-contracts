@@ -1,4 +1,4 @@
-export const CONTRACTS_VERSION = "2.2.0";
+export const CONTRACTS_VERSION = "2.2.1";
 export const CONTROL_PROTOCOL_VERSION = "1.0";
 export const CHANNEL_PROTOCOL_VERSION = "2.0";
 export const RUNTIME_PROTOCOL_VERSION = "2.0";

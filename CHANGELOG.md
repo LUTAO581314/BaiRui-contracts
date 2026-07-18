@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.1
+
+- Align the Runtime operation contract with the complete Hermes management
+  operation registry, including memory provider OAuth, MCP catalog install,
+  profile setup commands, and debug share.
+
 ## 2.1.0
 
 - Add owner-scoped request contracts for Runtime authorization resolution and
