@@ -19,11 +19,15 @@
     "signature",
     "event_id",
     "event_sequence",
+    "deployment_id",
     "command_id",
+    "action",
     "attempt",
     "state",
     "event_type",
-    "occurred_at"
+    "source_identity",
+    "occurred_at",
+    "received_at"
   ],
   "properties": {
     "schema_version": {
@@ -107,6 +111,10 @@
       "type": "integer",
       "minimum": 1
     },
+    "deployment_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
     "command_id": {
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -127,7 +135,6 @@
         "upstream.check",
         "config.stage",
         "config.apply",
-        "config.apply-user",
         "backup.create",
         "backup.verify",
         "backup.restore",
@@ -164,13 +171,17 @@
         "command.started",
         "command.executing",
         "command.progress",
-        "command.verifying",
-        "command.succeeded",
+        "command.verification.started",
+        "command.verified",
         "command.failed",
         "command.cancelled",
         "command.expired",
         "lease.renewed"
       ]
+    },
+    "source_identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
     "lease_id": {
       "type": "string",
@@ -201,6 +212,7 @@
         "missing_field",
         "invalid_identifier",
         "invalid_action",
+        "quarantined_action",
         "forbidden_action",
         "forbidden_field",
         "raw_secret_not_allowed",
@@ -219,7 +231,9 @@
         "lease_expired",
         "receipt_conflict",
         "release_not_immutable",
-        "evidence_not_found"
+        "evidence_not_found",
+        "stale_observation",
+        "verification_failed"
       ]
     },
     "error_ref": {
@@ -238,12 +252,283 @@
       "type": "string",
       "format": "date-time"
     },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "completed_at": {
       "type": "string",
       "format": "date-time"
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.queued"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "queued"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.leased"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "leased"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.accepted"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "accepted"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.started"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "running"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.executing"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "executing"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.progress"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "enum": [
+              "running",
+              "executing"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.verification.started"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "verifying"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.verified"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.failed"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.cancelled"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "cancelled"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.expired"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "expired"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "lease.renewed"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "const": "leased"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      }
+    },
     {
       "if": {
         "properties": {
@@ -296,6 +581,7 @@
               "missing_field",
               "invalid_identifier",
               "invalid_action",
+              "quarantined_action",
               "forbidden_action",
               "forbidden_field",
               "raw_secret_not_allowed",
@@ -314,8 +600,49 @@
               "lease_expired",
               "receipt_conflict",
               "release_not_immutable",
-              "evidence_not_found"
+              "evidence_not_found",
+              "stale_observation",
+              "verification_failed"
             ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "command.verified"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "observation_version",
+          "evidence_refs",
+          "completed_at"
+        ],
+        "properties": {
+          "observation_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(?:ref|id|hint|sha256):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            },
+            "minItems": 1
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

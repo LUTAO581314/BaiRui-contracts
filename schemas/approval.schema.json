@@ -23,7 +23,8 @@
     "risk_level",
     "requested_by",
     "decision",
-    "expires_at"
+    "expires_at",
+    "scope"
   ],
   "properties": {
     "schema_version": {
@@ -109,29 +110,13 @@
     },
     "action": {
       "enum": [
-        "snapshot.collect",
-        "deployment.provision",
-        "deployment.start",
-        "deployment.stop",
-        "deployment.suspend",
-        "deployment.resume",
-        "deployment.delete",
-        "credential.revoke",
-        "probe.run",
-        "contract.test",
-        "smoke.test",
-        "upstream.check",
-        "config.stage",
         "config.apply",
-        "config.apply-user",
-        "backup.create",
-        "backup.verify",
         "backup.restore",
-        "backup.expire",
-        "release.stage",
         "release.apply",
         "release.rollback",
-        "service.restart"
+        "service.restart",
+        "deployment.delete",
+        "credential.revoke"
       ]
     },
     "risk_level": {
@@ -185,6 +170,8 @@
       "additionalProperties": false,
       "required": [
         "deployment_id",
+        "organization_id",
+        "user_id",
         "agent_id",
         "server_id"
       ],
@@ -237,6 +224,29 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
+          "decided_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "expired"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "then": {
+        "required": [
+          "decided_at"
+        ],
+        "properties": {
           "decided_at": {
             "type": "string",
             "format": "date-time"

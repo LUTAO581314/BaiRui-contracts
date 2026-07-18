@@ -28,14 +28,12 @@ metadata?: {
 }
 }
 
-export type ControlCommand = ({
-[k: string]: unknown
-} & {
+export interface ControlCommand {
 schema_version: "1.0"
 command_id: string
 idempotency_key: string
 deployment_id: string
-action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "config.apply-user" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
+action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart" | "config.apply-user")
 target: {
 module_id: string
 instance_id?: string
@@ -48,7 +46,7 @@ expected_observation_version: number
 not_before?: string
 expires_at: string
 created_at: string
-})
+}
 
 export interface ControlCommandEnvelope {
 schema_version: "1.0"
@@ -69,7 +67,27 @@ value: string
 signed_at: string
 }
 command: {
+schema_version: "1.0"
+command_id: string
+idempotency_key: string
+deployment_id: string
+action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
+target: {
+module_id: string
+instance_id?: string
+}
+arguments: {
 [k: string]: unknown
+}
+approval_id?: string
+expected_observation_version: number
+not_before?: string
+expires_at: string
+created_at: string
+/**
+ * @maxItems 100
+ */
+secret_refs?: string[]
 }
 }
 
@@ -93,9 +111,11 @@ signed_at: string
 }
 deployment_id: string
 version: number
-state?: ("provisioned" | "running" | "stopped" | "suspended" | "deleted")
+status: ("proposed" | "accepted" | "active" | "superseded" | "rejected")
+target_state: ("provisioned" | "running" | "stopped" | "suspended" | "deleted")
 config_revision_id?: string
 release_id?: string
+backup_id?: string
 module_versions: {
 [k: string]: string
 }
@@ -135,13 +155,14 @@ signed_at: string
 }
 observation_id: string
 deployment_id: string
-version: number
+observation_version: number
 desired_state_version?: number
 status: ("healthy" | "degraded" | "unhealthy" | "unknown")
+freshness: ("fresh" | "stale" | "invalid")
 /**
  * @maxItems 200
  */
-modules: {
+components: {
 module_id: string
 status: ("healthy" | "degraded" | "unhealthy" | "unknown")
 version: string
@@ -154,20 +175,19 @@ observed_at: string
 evidence_refs?: string[]
 health_code?: string
 }[]
+source_identity: string
 /**
  * @maxItems 100
  */
 evidence_refs?: string[]
 redaction_status: "redacted"
 observed_at: string
-received_at?: string
+received_at: string
 freshness_seconds?: number
 updated_at?: string
 }
 
-export type CommandEvent = ({
-[k: string]: unknown
-} & {
+export interface CommandEvent {
 schema_version: "1.0"
 organization_id: string
 user_id: string
@@ -187,11 +207,13 @@ signed_at: string
 }
 event_id: string
 event_sequence: number
+deployment_id: string
 command_id: string
-action?: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "config.apply-user" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
+action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
 attempt: number
 state: ("queued" | "leased" | "accepted" | "running" | "executing" | "verifying" | "succeeded" | "failed" | "cancelled" | "expired")
-event_type: ("command.queued" | "command.leased" | "command.accepted" | "command.started" | "command.executing" | "command.progress" | "command.verifying" | "command.succeeded" | "command.failed" | "command.cancelled" | "command.expired" | "lease.renewed")
+event_type: ("command.queued" | "command.leased" | "command.accepted" | "command.started" | "command.executing" | "command.progress" | "command.verification.started" | "command.verified" | "command.failed" | "command.cancelled" | "command.expired" | "lease.renewed")
+source_identity: string
 lease_id?: string
 lease_token?: string
 observation_version?: number
@@ -199,17 +221,16 @@ observation_version?: number
  * @maxItems 100
  */
 evidence_refs?: string[]
-error_code?: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found")
+error_code?: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "quarantined_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found" | "stale_observation" | "verification_failed")
 error_ref?: string
 message_ref?: string
 result_ref?: string
 occurred_at: string
+received_at: string
 completed_at?: string
-})
+}
 
-export type Approval = ({
-[k: string]: unknown
-} & {
+export interface Approval {
 schema_version: "1.0"
 organization_id: string
 user_id: string
@@ -229,7 +250,7 @@ signed_at: string
 }
 approval_id: string
 command_id: string
-action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "config.apply-user" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
+action: ("config.apply" | "backup.restore" | "release.apply" | "release.rollback" | "service.restart" | "deployment.delete" | "credential.revoke")
 risk_level: ("low" | "medium" | "high" | "critical")
 requested_by: string
 decided_by?: string
@@ -238,14 +259,14 @@ reason_code?: ("operator_requested" | "policy_required" | "break_glass" | "rollb
 reason_ref?: string
 expires_at: string
 decided_at?: string
-scope?: {
+scope: {
 deployment_id: string
-organization_id?: string
-user_id?: string
+organization_id: string
+user_id: string
 agent_id: string
 server_id: string
 }
-})
+}
 
 export interface ReleaseManifest {
 schema_version: "1.0"
@@ -360,14 +381,45 @@ lease_expires_at: string
  * @maxItems 100
  */
 commands: {
+schema_version: "1.0"
+command_id: string
+idempotency_key: string
+deployment_id: string
+action: ("snapshot.collect" | "deployment.provision" | "deployment.start" | "deployment.stop" | "deployment.suspend" | "deployment.resume" | "deployment.delete" | "credential.revoke" | "probe.run" | "contract.test" | "smoke.test" | "upstream.check" | "config.stage" | "config.apply" | "backup.create" | "backup.verify" | "backup.restore" | "backup.expire" | "release.stage" | "release.apply" | "release.rollback" | "service.restart")
+target: {
+module_id: string
+instance_id?: string
+}
+arguments: {
 [k: string]: unknown
+}
+approval_id?: string
+expected_observation_version: number
+not_before?: string
+expires_at: string
+created_at: string
+/**
+ * @maxItems 100
+ */
+secret_refs?: string[]
+attempt: number
+lease_id: string
+lease_token: string
+lease_expires_at: string
+placement: {
+organization_id: string
+user_id?: string
+agent_id: string
+server_id: string
+}
+config_revision_ref?: string
+release_manifest_ref?: string
+rollback_release_ref?: string
 }[]
-issued_at?: string
+issued_at: string
 }
 
-export type ReceiptEnvelope = ({
-[k: string]: unknown
-} & {
+export interface ReceiptEnvelope {
 schema_version: "1.0"
 organization_id: string
 user_id: string
@@ -386,15 +438,18 @@ value: string
 signed_at: string
 }
 receipt_id: string
+deployment_id: string
 lease_id: string
 lease_token: string
 command_id: string
 attempt: number
-state: ("accepted" | "running" | "executing" | "verifying" | "succeeded" | "failed" | "cancelled" | "expired")
+state: ("accepted" | "running" | "executing" | "completion_candidate" | "failed" | "cancelled" | "expired")
 event_sequence: number
+source_identity: string
+observation_version?: number
 observed_at: string
 completed_at?: string
-error_code?: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found")
+error_code?: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "quarantined_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found" | "stale_observation" | "verification_failed")
 error_ref?: string
 /**
  * @maxItems 100
@@ -402,11 +457,11 @@ error_ref?: string
 evidence_refs?: string[]
 result_ref?: string
 endpoint_ref?: string
-})
+}
 
 export interface ControlError {
 schema_version: "1.0"
-error_code: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found")
+error_code: ("invalid_schema_version" | "unsupported_schema_version" | "unknown_field" | "missing_field" | "invalid_identifier" | "invalid_action" | "quarantined_action" | "forbidden_action" | "forbidden_field" | "raw_secret_not_allowed" | "invalid_signature" | "signature_key_unknown" | "signature_expired" | "replay_detected" | "idempotency_conflict" | "revision_conflict" | "sequence_conflict" | "owner_mismatch" | "server_mismatch" | "approval_required" | "approval_not_valid" | "lease_not_found" | "lease_expired" | "receipt_conflict" | "release_not_immutable" | "evidence_not_found" | "stale_observation" | "verification_failed")
 retryable: boolean
 request_id: string
 correlation_id: string
@@ -6077,7 +6132,261 @@ span_id?: string
 completed_at?: string
 }
 
-export type ControlAction = ControlCommand["action"];
+export interface BaiRuiContractMap {
+  "agent-owner-scope": AgentOwnerScope
+  "artifact-pointer": ArtifactPointer
+  "control-command": ControlCommand
+  "control-command-envelope": ControlCommandEnvelope
+  "desired-state": DesiredState
+  "observation": Observation
+  "command-event": CommandEvent
+  "approval": Approval
+  "release-manifest": ReleaseManifest
+  "lease-request-envelope": LeaseRequestEnvelope
+  "lease-envelope": LeaseEnvelope
+  "receipt-envelope": ReceiptEnvelope
+  "control-error": ControlError
+  "runtime-request-envelope": RuntimeRequestEnvelope
+  "runtime-operation-envelope": RuntimeOperationEnvelope
+  "runtime-stream-envelope": RuntimeStreamEnvelope
+  "scene-snapshot": SceneSnapshot
+  "scene-patch": ScenePatch
+  "scene-intent": SceneIntent
+  "runtime-heartbeat": RuntimeHeartbeat
+  "resource-report": ResourceReport
+  "heartbeat": Heartbeat
+  "resource-sample": ResourceSample
+  "credential-resolution": CredentialResolution
+  "credential-resolution-request": AgentCredentialResolutionRequest
+  "memory-projection": MemoryProjection
+  "channel-envelope": ChannelEnvelope
+  "channel-ingress": ChannelIngress
+  "channel-ingress-ack": ChannelIngressAck
+  "channel-delivery-lease-request": ChannelDeliveryLeaseRequest
+  "channel-delivery-batch": ChannelDeliveryBatch
+  "channel-delivery-receipt": ChannelDeliveryReceipt
+  "channel-health-report": ChannelHealthReport
+  "channel-credential-resolution": ChannelCredentialResolution
+  "channel-credential-resolution-request": ChannelCredentialResolutionRequest
+  "channel-binding-inventory-request": ChannelBindingInventoryRequest
+  "channel-binding-inventory": ChannelBindingInventory
+  "integration-request-envelope": IntegrationRequestEnvelope
+  "integration-result": IntegrationResult
+}
+
+export interface ContractIssue { instancePath: string; schemaPath: string; keyword: string; params: Record<string, unknown>; message?: string }
+
+export declare class ContractValidationError extends TypeError { readonly code: "invalid_contract"; readonly contract: string; readonly issues: ContractIssue[]; constructor(contract: string, errors?: ContractIssue[]) }
+
+export declare function assertContract<Name extends keyof BaiRuiContractMap>(contract: Name, value: unknown): BaiRuiContractMap[Name]
+
+export declare function validateControlCommand(value: unknown): ControlCommand
+export declare function validateRuntimeRequestEnvelope(value: unknown): RuntimeRequestEnvelope
+export declare function validateControlCommandEnvelope(value: unknown): CanonicalControlCommandEnvelope
+export declare function validateDesiredState(value: unknown): DesiredState
+export declare function validateObservation(value: unknown): Observation
+export declare function validateControlObservation(value: unknown): Observation
+export declare function validateCommandEvent(value: unknown): CommandEvent
+export declare function validateControlCommandEvent(value: unknown): CommandEvent
+export declare function validateApproval(value: unknown): Approval
+export declare function validateControlApproval(value: unknown): Approval
+export declare function validateReleaseManifest(value: unknown): ReleaseManifest
+export declare function validateLeaseRequestEnvelope(value: unknown): LeaseRequestEnvelope
+export declare function validateLeaseEnvelope(value: unknown): CanonicalLeaseEnvelope
+export declare function validateReceiptEnvelope(value: unknown): ReceiptEnvelope
+export declare function validateControlError(value: unknown): ControlError
+export declare function validateAgentOwnerScope(value: unknown): AgentOwnerScope
+export declare function validateArtifactPointer(value: unknown): ArtifactPointer
+export declare function validateRuntimeOperationEnvelope(value: unknown): RuntimeOperationEnvelope
+export declare function validateRuntimeStreamEnvelope(value: unknown): RuntimeStreamEnvelope
+export declare function validateSceneSnapshot(value: unknown): SceneSnapshot
+export declare function validateScenePatch(value: unknown): ScenePatch
+export declare function validateSceneIntent(value: unknown): SceneIntent
+export declare function validateRuntimeHeartbeat(value: unknown): RuntimeHeartbeat
+export declare function validateResourceReport(value: unknown): ResourceReport
+export declare function validateHeartbeat(value: unknown): Heartbeat
+export declare function validateResourceSample(value: unknown): ResourceSample
+export declare function validateCredentialResolution(value: unknown): CredentialResolution
+export declare function validateCredentialResolutionRequest(value: unknown): AgentCredentialResolutionRequest
+export declare function validateMemoryProjection(value: unknown): MemoryProjection
+export declare function validateChannelEnvelope(value: unknown): ChannelEnvelope
+export declare function validateChannelIngress(value: unknown): ChannelIngress
+export declare function validateChannelIngressAck(value: unknown): ChannelIngressAck
+export declare function validateChannelDeliveryLeaseRequest(value: unknown): ChannelDeliveryLeaseRequest
+export declare function validateChannelDeliveryBatch(value: unknown): ChannelDeliveryBatch
+export declare function validateChannelDeliveryReceipt(value: unknown): ChannelDeliveryReceipt
+export declare function validateChannelHealthReport(value: unknown): ChannelHealthReport
+export declare function validateChannelCredentialResolution(value: unknown): ChannelCredentialResolution
+export declare function validateChannelCredentialResolutionRequest(value: unknown): ChannelCredentialResolutionRequest
+export declare function validateChannelBindingInventoryRequest(value: unknown): ChannelBindingInventoryRequest
+export declare function validateChannelBindingInventory(value: unknown): ChannelBindingInventory
+export declare function validateIntegrationRequestEnvelope(value: unknown): IntegrationRequestEnvelope
+export declare function validateIntegrationResult(value: unknown): IntegrationResult
+
+export declare const SCHEMAS: Readonly<{ [Name in keyof BaiRuiContractMap]: Readonly<Record<string, unknown>> }>
+
+export declare const CONTRACTS_VERSION: string
+
+export declare const CONTROL_PROTOCOL_VERSION: string
+
+export declare const CONTROL_SCHEMA_VERSION: string
+
+export declare const CHANNEL_PROTOCOL_VERSION: string
+
+export declare const RUNTIME_PROTOCOL_VERSION: string
+
+export declare const DATA_PROTOCOL_VERSION: string
+
+export type LegacyControlAction = ControlCommand["action"]
+
+export type ControlAction = ControlCommandEnvelope["command"]["action"]
+
+export interface ControlActionArgumentMap {
+  "snapshot.collect": Record<string, never>
+  "deployment.provision": {
+    "agent_id": string
+    "workspace_ref": string
+    "config_revision_id": string
+  }
+  "deployment.start": {
+    "agent_id": string
+  }
+  "deployment.stop": {
+    "agent_id": string
+  }
+  "deployment.suspend": {
+    "agent_id": string
+  }
+  "deployment.resume": {
+    "agent_id": string
+  }
+  "deployment.delete": {
+    "agent_id": string
+    "backup_id"?: string
+  }
+  "credential.revoke": {
+    "identity_id": string
+  }
+  "probe.run": {
+    "probe_ids": string[]
+    "test_run_id"?: string
+  }
+  "contract.test": {
+    "suite_id": string
+    "test_run_id"?: string
+  }
+  "smoke.test": {
+    "suite_id": string
+    "test_run_id"?: string
+  }
+  "upstream.check": {
+    "upstream_id": string
+    "candidate_id"?: string
+    "test_run_id"?: string
+  }
+  "config.stage": {
+    "config_revision_id": string
+  }
+  "config.apply": {
+    "config_revision_id": string
+  }
+  "backup.create": {
+    "backup_policy_id": string
+    "backup_id"?: string
+  }
+  "backup.verify": {
+    "backup_id": string
+  }
+  "backup.restore": {
+    "backup_id": string
+    "restore_id": string
+  }
+  "backup.expire": {
+    "backup_id": string
+  }
+  "release.stage": {
+    "release_id": string
+    "rollout_id"?: string
+  }
+  "release.apply": {
+    "release_id": string
+    "rollout_id"?: string
+  }
+  "release.rollback": {
+    "release_id": string
+    "rollback_release_id": string
+    "rollout_id"?: string
+  }
+  "service.restart": {
+    "service_id": string
+  }
+}
+
+export type ApprovalControlAction = Approval["action"]
+
+export type CanonicalControlCommand<Action extends ControlAction = ControlAction> = Action extends ControlAction ? Omit<ControlCommandEnvelope["command"], "action" | "arguments" | "approval_id"> & { action: Action; arguments: ControlActionArgumentMap[Action] } & (Action extends ApprovalControlAction ? { approval_id: string } : { approval_id?: never }) : never
+
+export type CanonicalControlCommandEnvelope = Omit<ControlCommandEnvelope, "command"> & { command: CanonicalControlCommand }
+
+export type LeasedControlCommand<Action extends ControlAction = ControlAction> = Action extends ControlAction ? Omit<LeaseEnvelope["commands"][number], "action" | "arguments" | "approval_id"> & { action: Action; arguments: ControlActionArgumentMap[Action] } & (Action extends ApprovalControlAction ? { approval_id: string } : { approval_id?: never }) : never
+
+export type CanonicalLeaseEnvelope = Omit<LeaseEnvelope, "commands"> & { commands: LeasedControlCommand[] }
+
+export declare const CONTROL_ACTIONS: readonly ControlAction[]
+
+export declare const LEGACY_CONTROL_ACTIONS: readonly LegacyControlAction[]
+
+export declare const CONTROL_QUARANTINED_ACTIONS: readonly string[]
+
+export declare const CONTROL_ACTION_ARGUMENTS: Readonly<Record<ControlAction, { readonly required: readonly string[]; readonly optional: readonly string[] }>>
+
+export declare const LEGACY_CONTROL_ACTION_ARGUMENTS: Readonly<Record<LegacyControlAction, { readonly required: readonly string[]; readonly optional: readonly string[] }>>
+
+export declare const CONTROL_APPROVAL_ACTIONS: readonly ControlAction[]
+
+export declare const CONTROL_COMMAND_STATES: readonly string[]
+
+export declare const CONTROL_EVENT_STATES: readonly CommandEvent["state"][]
+
+export declare const CONTROL_EVENT_TYPES: readonly CommandEvent["event_type"][]
+
+export declare const CONTROL_RECEIPT_STATES: readonly ReceiptEnvelope["state"][]
+
+export declare const CONTROL_APPROVAL_DECISIONS: readonly Approval["decision"][]
+
+export declare const CONTROL_RISK_LEVELS: readonly Approval["risk_level"][]
+
+export declare const CONTROL_RELEASE_STATUSES: readonly ReleaseManifest["status"][]
+
+export declare const CONTROL_DESIRED_STATES: readonly DesiredState["status"][]
+
+export declare const CONTROL_TARGET_STATES: readonly DesiredState["target_state"][]
+
+export declare const CONTROL_SIGNATURE_ALGORITHMS: readonly ControlCommandEnvelope["signature"]["algorithm"][]
+
+export declare const CONTROL_MUTATION_FIELDS: readonly string[]
+
+export declare const CONTROL_COMPATIBILITY_WINDOW: Readonly<Record<string, unknown>>
+
+export declare const CONTROL_ERROR_CODES: readonly ControlError["error_code"][]
+
+export declare const IDENTITY_KINDS: readonly string[]
+
+export declare const ARTIFACT_KINDS: readonly ArtifactPointer["kind"][]
+
+export declare const CHANNELS: readonly string[]
+
+export declare const CHANNEL_CONNECTION_STATUSES: readonly string[]
+
+export declare const CHANNEL_DELIVERY_STATUSES: readonly string[]
+
+export declare const RUNTIME_OPERATIONS: readonly RuntimeOperationEnvelope["operation"][]
+
+export declare const RUNTIME_STREAM_OPERATIONS: readonly RuntimeStreamEnvelope["operation"][]
+
+export declare const MODULE_LAYERS: readonly RuntimeHeartbeat["components"][number]["layer"][]
+
+export declare const MODULE_STATUSES: readonly RuntimeHeartbeat["status"][]
 
 export type RuntimeOperation = RuntimeOperationEnvelope["operation"];
 

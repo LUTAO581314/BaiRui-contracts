@@ -11,6 +11,9 @@
   "sequence": 1,
   "deployment_id": "deployment_1",
   "version": 1,
+  "status": "active",
+  "target_state": "running",
   "module_versions": {},
+  "config_revision_id": "config_revision_1",
   "updated_at": "2026-07-18T00:00:01Z"
 }

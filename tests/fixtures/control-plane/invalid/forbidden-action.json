@@ -18,10 +18,13 @@
   },
   "event_id": "event_invalid_1",
   "event_sequence": 1,
+  "deployment_id": "deployment_1",
   "command_id": "command_invalid_1",
   "action": "model.set",
   "attempt": 1,
   "state": "accepted",
   "event_type": "command.accepted",
-  "occurred_at": "2026-07-18T00:00:02Z"
+  "source_identity": "server_machine_1",
+  "occurred_at": "2026-07-18T00:00:02Z",
+  "received_at": "2026-07-18T00:00:03Z"
 }

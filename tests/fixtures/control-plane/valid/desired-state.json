@@ -18,11 +18,12 @@
   },
   "deployment_id": "deployment_1",
   "version": 1,
-  "state": "running",
+  "status": "active",
+  "target_state": "running",
   "config_revision_id": "config_revision_1",
   "release_id": "release_1",
   "module_versions": {
-    "control-supervisor": "hermes"
+    "control-supervisor": "2.3.0-rc.1"
   },
   "modules": [
     {

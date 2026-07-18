@@ -12,12 +12,16 @@ import {
   CONTROL_DESIRED_STATES,
   CONTROL_ERROR_CODES,
   CONTROL_EVENT_STATES,
+  CONTROL_EVENT_TYPES,
+  CONTROL_TARGET_STATES,
   CONTROL_RELEASE_STATUSES,
   CONTROL_RECEIPT_STATES,
   CONTROL_RISK_LEVELS,
   CONTROL_SCHEMA_VERSION,
   CONTROL_SIGNATURE_ALGORITHMS,
   DATA_PROTOCOL_VERSION,
+  LEGACY_CONTROL_ACTIONS,
+  LEGACY_CONTROL_ACTION_ARGUMENTS,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,
@@ -111,9 +115,14 @@ function document(name, body) {
   return { $schema: draft, $id: `https://contracts.bairui.ai/v2/${name}.schema.json`, ...body };
 }
 
-const semver = { type: "string", pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$", maxLength: 64 };
+const semver = {
+  type: "string",
+  pattern: "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+  maxLength: 128
+};
 const digest = { type: "string", pattern: "^sha256:[a-f0-9]{64}$" };
 const opaqueReference = { type: "string", pattern: "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$" };
+const secretReference = { type: "string", pattern: "^sr_[A-Za-z0-9_-]{16,128}$" };
 const evidenceReference = { type: "string", pattern: "^(?:ref|id|hint|sha256):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$" };
 const controlSignature = {
   type: "object",
@@ -145,11 +154,12 @@ function mutationProperties() {
 }
 const evidenceReferences = { type: "array", maxItems: 100, uniqueItems: true, items: evidenceReference };
 const opaqueReferences = { type: "array", maxItems: 100, uniqueItems: true, items: opaqueReference };
+const secretReferences = { type: "array", maxItems: 100, uniqueItems: true, items: secretReference };
 const moduleVersionMap = {
   type: "object",
   maxProperties: 100,
   propertyNames: { pattern: idPattern },
-  additionalProperties: { anyOf: [semver, opaqueReference, identifier] }
+  additionalProperties: { anyOf: [semver, opaqueReference] }
 };
 
 export const agentOwnerScopeSchema = document("agent-owner-scope", {
@@ -197,34 +207,37 @@ function runtimePrincipalProperties() {
   };
 }
 
-const actionConditions = Object.entries(CONTROL_ACTION_ARGUMENTS).map(([action, definition]) => ({
-  if: { properties: { action: { const: action } }, required: ["action"] },
-  then: {
-    properties: {
-      arguments: {
-        type: "object",
-        additionalProperties: false,
-        required: definition.required,
-        properties: Object.fromEntries([...definition.required, ...definition.optional].map((field) => [
-          field,
-          argumentArrayFields.has(field) ? identifierArray : identifier
-        ]))
+function actionConditions(actionArguments) {
+  return Object.entries(actionArguments).map(([action, definition]) => ({
+    if: { properties: { action: { const: action } }, required: ["action"] },
+    then: {
+      properties: {
+        arguments: {
+          type: "object",
+          additionalProperties: false,
+          required: definition.required,
+          properties: Object.fromEntries([...definition.required, ...definition.optional].map((field) => [
+            field,
+            argumentArrayFields.has(field) ? identifierArray : identifier
+          ]))
+        }
       }
     }
-  }
-}));
+  }));
+}
 
-export const controlCommandSchema = document("control-command", {
-  title: "ControlCommand",
+const controlCommandRequired = ["schema_version", "command_id", "idempotency_key", "deployment_id", "action", "target", "arguments", "expected_observation_version", "expires_at", "created_at"];
+function commandShape(actions, actionArguments, { allowSecretRefs = false } = {}) {
+  return {
   type: "object",
   additionalProperties: false,
-  required: ["schema_version", "command_id", "idempotency_key", "deployment_id", "action", "target", "arguments", "expected_observation_version", "expires_at", "created_at"],
+  required: controlCommandRequired,
   properties: {
     schema_version: { const: "1.0" },
     command_id: identifier,
     idempotency_key: identifier,
     deployment_id: identifier,
-    action: { enum: CONTROL_ACTIONS },
+    action: { enum: actions },
     target: {
       type: "object",
       additionalProperties: false,
@@ -236,31 +249,32 @@ export const controlCommandSchema = document("control-command", {
     expected_observation_version: { type: "integer", minimum: 0 },
     not_before: timestamp,
     expires_at: timestamp,
-    created_at: timestamp
+    created_at: timestamp,
+    ...(allowSecretRefs ? { secret_refs: secretReferences } : {})
   },
   allOf: [
-    ...actionConditions,
+    ...actionConditions(actionArguments),
     {
       if: { properties: { action: { enum: CONTROL_APPROVAL_ACTIONS } }, required: ["action"] },
       then: { required: ["approval_id"], properties: { approval_id: identifier } }
     }
   ]
+  };
+}
+
+const legacyControlCommandShape = commandShape(LEGACY_CONTROL_ACTIONS, LEGACY_CONTROL_ACTION_ARGUMENTS);
+const canonicalControlCommandShape = commandShape(CONTROL_ACTIONS, CONTROL_ACTION_ARGUMENTS, { allowSecretRefs: true });
+
+export const controlCommandSchema = document("control-command", {
+  title: "ControlCommand",
+  ...legacyControlCommandShape
 });
 
-const legacyControlCommandShape = {
-  type: "object",
-  additionalProperties: false,
-  required: [...controlCommandSchema.required],
-  properties: controlCommandSchema.properties,
-  allOf: controlCommandSchema.allOf
-};
-
 const leasedCommandShape = {
-  type: "object",
-  additionalProperties: false,
-  required: [...controlCommandSchema.required, "attempt", "lease_id", "lease_token", "lease_expires_at"],
+  ...canonicalControlCommandShape,
+  required: [...canonicalControlCommandShape.required, "attempt", "lease_id", "lease_token", "lease_expires_at", "placement"],
   properties: {
-    ...controlCommandSchema.properties,
+    ...canonicalControlCommandShape.properties,
     attempt: { type: "integer", minimum: 1 },
     lease_id: identifier,
     lease_token: opaqueReference,
@@ -274,8 +288,7 @@ const leasedCommandShape = {
     config_revision_ref: opaqueReference,
     release_manifest_ref: opaqueReference,
     rollback_release_ref: opaqueReference
-  },
-  allOf: controlCommandSchema.allOf
+  }
 };
 
 export const controlCommandEnvelopeSchema = document("control-command-envelope", {
@@ -283,7 +296,7 @@ export const controlCommandEnvelopeSchema = document("control-command-envelope",
   type: "object",
   additionalProperties: false,
   required: [...mutationRequired, "command"],
-  properties: { ...mutationProperties(), command: legacyControlCommandShape }
+  properties: { ...mutationProperties(), command: canonicalControlCommandShape }
 });
 
 const desiredModule = {
@@ -304,20 +317,34 @@ export const desiredStateSchema = document("desired-state", {
   title: "DesiredState",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "deployment_id", "version", "module_versions", "updated_at"],
+  required: [...mutationRequired, "deployment_id", "version", "status", "target_state", "module_versions", "updated_at"],
   properties: {
     ...mutationProperties(),
     deployment_id: identifier,
     version: { type: "integer", minimum: 1 },
-    state: { enum: CONTROL_DESIRED_STATES },
+    status: { enum: CONTROL_DESIRED_STATES },
+    target_state: { enum: CONTROL_TARGET_STATES },
     config_revision_id: identifier,
     release_id: identifier,
+    backup_id: identifier,
     module_versions: moduleVersionMap,
     modules: { type: "array", maxItems: 100, items: desiredModule },
     updated_at: timestamp,
     valid_from: timestamp,
     expires_at: timestamp
-  }
+  },
+  allOf: [{
+    if: { properties: { status: { const: "active" } }, required: ["status"] },
+    then: {
+      anyOf: [
+        { properties: { config_revision_id: identifier }, required: ["config_revision_id"] },
+        { properties: { release_id: identifier }, required: ["release_id"] },
+        { properties: { backup_id: identifier }, required: ["backup_id"] },
+        { properties: { module_versions: { ...moduleVersionMap, minProperties: 1 } }, required: ["module_versions"] },
+        { properties: { modules: { type: "array", minItems: 1, maxItems: 100, items: desiredModule } }, required: ["modules"] }
+      ]
+    }
+  }]
 });
 
 const observedModule = {
@@ -341,15 +368,17 @@ export const observationSchema = document("observation", {
   title: "Observation",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "observation_id", "deployment_id", "version", "status", "modules", "redaction_status", "observed_at"],
+  required: [...mutationRequired, "observation_id", "deployment_id", "observation_version", "status", "freshness", "components", "source_identity", "redaction_status", "observed_at", "received_at"],
   properties: {
     ...mutationProperties(),
     observation_id: identifier,
     deployment_id: identifier,
-    version: { type: "integer", minimum: 1 },
+    observation_version: { type: "integer", minimum: 1 },
     desired_state_version: { type: "integer", minimum: 0 },
     status: { enum: MODULE_STATUSES },
-    modules: { type: "array", maxItems: 200, items: observedModule },
+    freshness: { enum: ["fresh", "stale", "invalid"] },
+    components: { type: "array", maxItems: 200, items: observedModule },
+    source_identity: identifier,
     evidence_refs: evidenceReferences,
     redaction_status: { const: "redacted" },
     observed_at: timestamp,
@@ -359,20 +388,40 @@ export const observationSchema = document("observation", {
   }
 });
 
+const eventStateConditions = Object.entries({
+  "command.queued": "queued",
+  "command.leased": "leased",
+  "command.accepted": "accepted",
+  "command.started": "running",
+  "command.executing": "executing",
+  "command.progress": ["running", "executing"],
+  "command.verification.started": "verifying",
+  "command.verified": "succeeded",
+  "command.failed": "failed",
+  "command.cancelled": "cancelled",
+  "command.expired": "expired",
+  "lease.renewed": "leased"
+}).map(([eventType, state]) => ({
+  if: { properties: { event_type: { const: eventType } }, required: ["event_type"] },
+  then: { properties: { state: Array.isArray(state) ? { enum: state } : { const: state } }, required: ["state"] }
+}));
+
 export const commandEventSchema = document("command-event", {
   title: "CommandEvent",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "event_id", "event_sequence", "command_id", "attempt", "state", "event_type", "occurred_at"],
+  required: [...mutationRequired, "event_id", "event_sequence", "deployment_id", "command_id", "action", "attempt", "state", "event_type", "source_identity", "occurred_at", "received_at"],
   properties: {
     ...mutationProperties(),
     event_id: identifier,
     event_sequence: { type: "integer", minimum: 1 },
+    deployment_id: identifier,
     command_id: identifier,
     action: { enum: CONTROL_ACTIONS },
     attempt: { type: "integer", minimum: 1 },
     state: { enum: CONTROL_EVENT_STATES },
-    event_type: { enum: ["command.queued", "command.leased", "command.accepted", "command.started", "command.executing", "command.progress", "command.verifying", "command.succeeded", "command.failed", "command.cancelled", "command.expired", "lease.renewed"] },
+    event_type: { enum: CONTROL_EVENT_TYPES },
+    source_identity: identifier,
     lease_id: identifier,
     lease_token: opaqueReference,
     observation_version: { type: "integer", minimum: 0 },
@@ -382,9 +431,11 @@ export const commandEventSchema = document("command-event", {
     message_ref: opaqueReference,
     result_ref: opaqueReference,
     occurred_at: timestamp,
+    received_at: timestamp,
     completed_at: timestamp
   },
   allOf: [
+    ...eventStateConditions,
     {
       if: { properties: { state: { enum: terminalEventStates } }, required: ["state"] },
       then: { required: ["completed_at"], properties: { completed_at: timestamp } }
@@ -392,6 +443,17 @@ export const commandEventSchema = document("command-event", {
     {
       if: { properties: { state: { const: "failed" } }, required: ["state"] },
       then: { required: ["error_code"], properties: { error_code: { enum: CONTROL_ERROR_CODES } } }
+    },
+    {
+      if: { properties: { event_type: { const: "command.verified" } }, required: ["event_type"] },
+      then: {
+        required: ["observation_version", "evidence_refs", "completed_at"],
+        properties: {
+          observation_version: { type: "integer", minimum: 1 },
+          evidence_refs: { ...evidenceReferences, minItems: 1 },
+          completed_at: timestamp
+        }
+      }
     }
   ]
 });
@@ -400,12 +462,12 @@ export const approvalSchema = document("approval", {
   title: "Approval",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "approval_id", "command_id", "action", "risk_level", "requested_by", "decision", "expires_at"],
+  required: [...mutationRequired, "approval_id", "command_id", "action", "risk_level", "requested_by", "decision", "expires_at", "scope"],
   properties: {
     ...mutationProperties(),
     approval_id: identifier,
     command_id: identifier,
-    action: { enum: CONTROL_ACTIONS },
+    action: { enum: CONTROL_APPROVAL_ACTIONS },
     risk_level: { enum: CONTROL_RISK_LEVELS },
     requested_by: identifier,
     decided_by: identifier,
@@ -417,7 +479,7 @@ export const approvalSchema = document("approval", {
     scope: {
       type: "object",
       additionalProperties: false,
-      required: ["deployment_id", "agent_id", "server_id"],
+      required: ["deployment_id", "organization_id", "user_id", "agent_id", "server_id"],
       properties: { deployment_id: identifier, organization_id: identifier, user_id: identifier, agent_id: identifier, server_id: identifier }
     }
   },
@@ -425,6 +487,10 @@ export const approvalSchema = document("approval", {
     {
       if: { properties: { decision: { enum: ["approved", "rejected"] } }, required: ["decision"] },
       then: { required: ["decided_by", "decided_at"], properties: { decided_by: identifier, decided_at: timestamp } }
+    },
+    {
+      if: { properties: { decision: { const: "expired" } }, required: ["decision"] },
+      then: { required: ["decided_at"], properties: { decided_at: timestamp } }
     },
     {
       if: { properties: { decision: { const: "pending" } }, required: ["decision"] },
@@ -489,7 +555,14 @@ export const releaseManifestSchema = document("release-manifest", {
     migration_ref: opaqueReference,
     compatibility: releaseCompatibility,
     release_notes_ref: opaqueReference
-  }
+  },
+  allOf: [{
+    if: { properties: { status: { enum: ["approved", "rolling_out", "released"] } }, required: ["status"] },
+    then: {
+      required: ["sbom_ref", "provenance_ref", "attestation_ref"],
+      properties: { sbom_ref: opaqueReference, provenance_ref: opaqueReference, attestation_ref: opaqueReference }
+    }
+  }]
 });
 
 export const leaseRequestEnvelopeSchema = document("lease-request-envelope", {
@@ -510,7 +583,7 @@ export const leaseEnvelopeSchema = document("lease-envelope", {
   title: "LeaseEnvelope",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "lease_id", "lease_expires_at", "commands"],
+  required: [...mutationRequired, "lease_id", "lease_expires_at", "issued_at", "commands"],
   properties: {
     ...mutationProperties(),
     lease_id: identifier,
@@ -524,16 +597,19 @@ export const receiptEnvelopeSchema = document("receipt-envelope", {
   title: "ReceiptEnvelope",
   type: "object",
   additionalProperties: false,
-  required: [...mutationRequired, "receipt_id", "lease_id", "lease_token", "command_id", "attempt", "state", "event_sequence", "observed_at"],
+  required: [...mutationRequired, "receipt_id", "deployment_id", "lease_id", "lease_token", "command_id", "attempt", "state", "event_sequence", "source_identity", "observed_at"],
   properties: {
     ...mutationProperties(),
     receipt_id: identifier,
+    deployment_id: identifier,
     lease_id: identifier,
     lease_token: opaqueReference,
     command_id: identifier,
     attempt: { type: "integer", minimum: 1 },
     state: { enum: CONTROL_RECEIPT_STATES },
     event_sequence: { type: "integer", minimum: 1 },
+    source_identity: identifier,
+    observation_version: { type: "integer", minimum: 1 },
     observed_at: timestamp,
     completed_at: timestamp,
     error_code: { enum: CONTROL_ERROR_CODES },
@@ -544,12 +620,22 @@ export const receiptEnvelopeSchema = document("receipt-envelope", {
   },
   allOf: [
     {
-      if: { properties: { state: { enum: terminalEventStates } }, required: ["state"] },
+      if: { properties: { state: { enum: ["completion_candidate", "failed", "cancelled", "expired"] } }, required: ["state"] },
       then: { required: ["completed_at"], properties: { completed_at: timestamp } }
     },
     {
       if: { properties: { state: { const: "failed" } }, required: ["state"] },
       then: { required: ["error_code"], properties: { error_code: { enum: CONTROL_ERROR_CODES } } }
+    },
+    {
+      if: { properties: { state: { const: "completion_candidate" } }, required: ["state"] },
+      then: {
+        required: ["observation_version", "evidence_refs"],
+        properties: {
+          observation_version: { type: "integer", minimum: 1 },
+          evidence_refs: { ...evidenceReferences, minItems: 1 }
+        }
+      }
     }
   ]
 });
@@ -1265,7 +1351,7 @@ export const OPENAPI_PATHS = Object.freeze({
   "/api/internal/channels/delivery-receipts": ["post", "channel-delivery-receipt", null, 202],
   "/api/internal/channels/health": ["post", "channel-health-report", null, 202],
   "/api/internal/channels/bindings": ["post", "channel-binding-inventory-request", "channel-binding-inventory", 200],
-  "/api/internal/control-plane/heartbeats": ["post", "runtime-heartbeat"],
+  "/api/internal/control-plane/heartbeats": ["post", "heartbeat"],
   "/api/internal/control-plane/resources": ["post", "resource-report"],
   "/api/internal/control-plane/desired-states": ["post", "desired-state", null, 202],
   "/api/internal/control-plane/observations": ["post", "observation", null, 202],

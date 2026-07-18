@@ -18,10 +18,11 @@
   },
   "observation_id": "observation_1",
   "deployment_id": "deployment_1",
-  "version": 1,
+  "observation_version": 1,
   "desired_state_version": 1,
   "status": "healthy",
-  "modules": [
+  "freshness": "fresh",
+  "components": [
     {
       "module_id": "control-supervisor",
       "status": "healthy",
@@ -33,6 +34,7 @@
       "health_code": "healthy"
     }
   ],
+  "source_identity": "agent_reporter_1",
   "evidence_refs": ["ref:observation-1"],
   "redaction_status": "redacted",
   "observed_at": "2026-07-18T00:01:02Z",

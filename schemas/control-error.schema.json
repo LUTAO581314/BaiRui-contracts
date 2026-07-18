@@ -24,6 +24,7 @@
         "missing_field",
         "invalid_identifier",
         "invalid_action",
+        "quarantined_action",
         "forbidden_action",
         "forbidden_field",
         "raw_secret_not_allowed",
@@ -42,7 +43,9 @@
         "lease_expired",
         "receipt_conflict",
         "release_not_immutable",
-        "evidence_not_found"
+        "evidence_not_found",
+        "stale_observation",
+        "verification_failed"
       ]
     },
     "retryable": {

@@ -19,11 +19,14 @@
     "signature",
     "observation_id",
     "deployment_id",
-    "version",
+    "observation_version",
     "status",
-    "modules",
+    "freshness",
+    "components",
+    "source_identity",
     "redaction_status",
-    "observed_at"
+    "observed_at",
+    "received_at"
   ],
   "properties": {
     "schema_version": {
@@ -107,7 +110,7 @@
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
-    "version": {
+    "observation_version": {
       "type": "integer",
       "minimum": 1
     },
@@ -123,7 +126,14 @@
         "unknown"
       ]
     },
-    "modules": {
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "invalid"
+      ]
+    },
+    "components": {
       "type": "array",
       "maxItems": 200,
       "items": {
@@ -183,6 +193,10 @@
           }
         }
       }
+    },
+    "source_identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
     "evidence_refs": {
       "type": "array",

@@ -10,7 +10,9 @@
         "operationId": "postV1RuntimeRequests",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -41,7 +43,9 @@
         "operationId": "postV1RuntimeOperations",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -72,7 +76,9 @@
         "operationId": "postV1RuntimeStreams",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -103,7 +109,9 @@
         "operationId": "postV1IntegrationsRequests",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -134,7 +142,9 @@
         "operationId": "postApiInternalChannelsIngress",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -172,7 +182,9 @@
         "operationId": "postApiInternalChannelsDeliveriesLease",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -210,7 +222,9 @@
         "operationId": "postApiInternalChannelsDeliveryReceipts",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -241,7 +255,9 @@
         "operationId": "postApiInternalChannelsHealth",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -272,7 +288,9 @@
         "operationId": "postApiInternalChannelsBindings",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -310,7 +328,9 @@
         "operationId": "postApiInternalControlPlaneHeartbeats",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -318,7 +338,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RuntimeHeartbeat"
+                "$ref": "#/components/schemas/Heartbeat"
               }
             }
           }
@@ -328,10 +348,54 @@
             "description": "Success"
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -341,7 +405,9 @@
         "operationId": "postApiInternalControlPlaneResources",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -359,10 +425,54 @@
             "description": "Success"
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -372,7 +482,9 @@
         "operationId": "postApiInternalControlPlaneDesiredStates",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -390,10 +502,54 @@
             "description": "Accepted"
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -403,7 +559,9 @@
         "operationId": "postApiInternalControlPlaneObservations",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -421,10 +579,54 @@
             "description": "Accepted"
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -434,7 +636,9 @@
         "operationId": "postApiInternalControlPlaneCommands",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -459,10 +663,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -472,7 +720,9 @@
         "operationId": "postApiInternalControlPlaneCommandsEvents",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -490,10 +740,54 @@
             "description": "Accepted"
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -503,7 +797,9 @@
         "operationId": "postApiInternalControlPlaneApprovals",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -528,10 +824,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -541,7 +881,9 @@
         "operationId": "postApiInternalControlPlaneReleasesManifests",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -566,10 +908,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -579,7 +965,9 @@
         "operationId": "postApiInternalControlPlaneLeases",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -604,10 +992,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -617,7 +1049,9 @@
         "operationId": "postApiInternalControlPlaneReceipts",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -642,10 +1076,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -655,7 +1133,9 @@
         "operationId": "postApiInternalControlPlaneCommandsLease",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -680,10 +1160,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -693,7 +1217,9 @@
         "operationId": "postApiInternalControlPlaneCommandsReceipts",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "requestBody": {
@@ -718,10 +1244,54 @@
             }
           },
           "400": {
-            "description": "Contract validation failed"
+            "description": "Contract validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Machine authentication failed"
+            "description": "Machine authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Machine identity or owner scope is forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency, revision, sequence, lease, or receipt conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Control policy or state transition rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlError"
+                }
+              }
+            }
           }
         }
       }
@@ -731,7 +1301,9 @@
         "operationId": "resolveAgentAuthorization",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "parameters": [
@@ -787,7 +1359,9 @@
         "operationId": "resolveChannelBindingCredential",
         "security": [
           {
-            "machineSignature": []
+            "machineSignature": [],
+            "machineTimestamp": [],
+            "machineNonce": []
           }
         ],
         "parameters": [
@@ -837,7 +1411,19 @@
         "type": "apiKey",
         "in": "header",
         "name": "x-bairui-signature",
-        "description": "Timestamp, nonce, and HMAC authenticated machine request."
+        "description": "HMAC signature over the method, path, timestamp, nonce, and body."
+      },
+      "machineTimestamp": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-bairui-timestamp",
+        "description": "Signed request timestamp used for freshness validation."
+      },
+      "machineNonce": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-bairui-nonce",
+        "description": "Signed one-time nonce used for replay prevention."
       }
     },
     "schemas": {
@@ -1035,7 +1621,6 @@
               "upstream.check",
               "config.stage",
               "config.apply",
-              "config.apply-user",
               "backup.create",
               "backup.verify",
               "backup.restore",
@@ -1043,7 +1628,8 @@
               "release.stage",
               "release.apply",
               "release.rollback",
-              "service.restart"
+              "service.restart",
+              "config.apply-user"
             ]
           },
           "target": {
@@ -1531,35 +2117,6 @@
             "if": {
               "properties": {
                 "action": {
-                  "const": "config.apply-user"
-                }
-              },
-              "required": [
-                "action"
-              ]
-            },
-            "then": {
-              "properties": {
-                "arguments": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "config_revision_id"
-                  ],
-                  "properties": {
-                    "config_revision_id": {
-                      "type": "string",
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "action": {
                   "const": "backup.create"
                 }
               },
@@ -1818,6 +2375,35 @@
             "if": {
               "properties": {
                 "action": {
+                  "const": "config.apply-user"
+                }
+              },
+              "required": [
+                "action"
+              ]
+            },
+            "then": {
+              "properties": {
+                "arguments": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "config_revision_id"
+                  ],
+                  "properties": {
+                    "config_revision_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "action": {
                   "enum": [
                     "config.apply",
                     "backup.restore",
@@ -1989,7 +2575,6 @@
                   "upstream.check",
                   "config.stage",
                   "config.apply",
-                  "config.apply-user",
                   "backup.create",
                   "backup.verify",
                   "backup.restore",
@@ -2039,6 +2624,15 @@
               "created_at": {
                 "type": "string",
                 "format": "date-time"
+              },
+              "secret_refs": {
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^sr_[A-Za-z0-9_-]{16,128}$"
+                }
               }
             },
             "allOf": [
@@ -2485,35 +3079,6 @@
                 "if": {
                   "properties": {
                     "action": {
-                      "const": "config.apply-user"
-                    }
-                  },
-                  "required": [
-                    "action"
-                  ]
-                },
-                "then": {
-                  "properties": {
-                    "arguments": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "config_revision_id"
-                      ],
-                      "properties": {
-                        "config_revision_id": {
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "if": {
-                  "properties": {
-                    "action": {
                       "const": "backup.create"
                     }
                   },
@@ -2824,6 +3389,8 @@
           "signature",
           "deployment_id",
           "version",
+          "status",
+          "target_state",
           "module_versions",
           "updated_at"
         ],
@@ -2909,7 +3476,16 @@
             "type": "integer",
             "minimum": 1
           },
-          "state": {
+          "status": {
+            "enum": [
+              "proposed",
+              "accepted",
+              "active",
+              "superseded",
+              "rejected"
+            ]
+          },
+          "target_state": {
             "enum": [
               "provisioned",
               "running",
@@ -2926,6 +3502,10 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
+          "backup_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
           "module_versions": {
             "type": "object",
             "maxProperties": 100,
@@ -2936,16 +3516,12 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                  "maxLength": 64
+                  "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                  "maxLength": 128
                 },
                 {
                   "type": "string",
                   "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                },
-                {
-                  "type": "string",
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                 }
               ]
             }
@@ -3004,7 +3580,136 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "active"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "config_revision_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "required": [
+                    "config_revision_id"
+                  ]
+                },
+                {
+                  "properties": {
+                    "release_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "required": [
+                    "release_id"
+                  ]
+                },
+                {
+                  "properties": {
+                    "backup_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                    }
+                  },
+                  "required": [
+                    "backup_id"
+                  ]
+                },
+                {
+                  "properties": {
+                    "module_versions": {
+                      "type": "object",
+                      "maxProperties": 100,
+                      "propertyNames": {
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                      },
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                            "maxLength": 128
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          }
+                        ]
+                      },
+                      "minProperties": 1
+                    }
+                  },
+                  "required": [
+                    "module_versions"
+                  ]
+                },
+                {
+                  "properties": {
+                    "modules": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "module_id",
+                          "desired_status",
+                          "version_ref"
+                        ],
+                        "properties": {
+                          "module_id": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          },
+                          "desired_status": {
+                            "enum": [
+                              "absent",
+                              "stopped",
+                              "running",
+                              "suspended"
+                            ]
+                          },
+                          "version_ref": {
+                            "type": "string",
+                            "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          },
+                          "image_digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[a-f0-9]{64}$"
+                          },
+                          "config_ref": {
+                            "type": "string",
+                            "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                          },
+                          "enabled": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "modules"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "Observation": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -3027,11 +3732,14 @@
           "signature",
           "observation_id",
           "deployment_id",
-          "version",
+          "observation_version",
           "status",
-          "modules",
+          "freshness",
+          "components",
+          "source_identity",
           "redaction_status",
-          "observed_at"
+          "observed_at",
+          "received_at"
         ],
         "properties": {
           "schema_version": {
@@ -3115,7 +3823,7 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
-          "version": {
+          "observation_version": {
             "type": "integer",
             "minimum": 1
           },
@@ -3131,7 +3839,14 @@
               "unknown"
             ]
           },
-          "modules": {
+          "freshness": {
+            "enum": [
+              "fresh",
+              "stale",
+              "invalid"
+            ]
+          },
+          "components": {
             "type": "array",
             "maxItems": 200,
             "items": {
@@ -3192,6 +3907,10 @@
               }
             }
           },
+          "source_identity": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
           "evidence_refs": {
             "type": "array",
             "maxItems": 100,
@@ -3244,11 +3963,15 @@
           "signature",
           "event_id",
           "event_sequence",
+          "deployment_id",
           "command_id",
+          "action",
           "attempt",
           "state",
           "event_type",
-          "occurred_at"
+          "source_identity",
+          "occurred_at",
+          "received_at"
         ],
         "properties": {
           "schema_version": {
@@ -3332,6 +4055,10 @@
             "type": "integer",
             "minimum": 1
           },
+          "deployment_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
           "command_id": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -3352,7 +4079,6 @@
               "upstream.check",
               "config.stage",
               "config.apply",
-              "config.apply-user",
               "backup.create",
               "backup.verify",
               "backup.restore",
@@ -3389,13 +4115,17 @@
               "command.started",
               "command.executing",
               "command.progress",
-              "command.verifying",
-              "command.succeeded",
+              "command.verification.started",
+              "command.verified",
               "command.failed",
               "command.cancelled",
               "command.expired",
               "lease.renewed"
             ]
+          },
+          "source_identity": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
           "lease_id": {
             "type": "string",
@@ -3426,6 +4156,7 @@
               "missing_field",
               "invalid_identifier",
               "invalid_action",
+              "quarantined_action",
               "forbidden_action",
               "forbidden_field",
               "raw_secret_not_allowed",
@@ -3444,7 +4175,9 @@
               "lease_expired",
               "receipt_conflict",
               "release_not_immutable",
-              "evidence_not_found"
+              "evidence_not_found",
+              "stale_observation",
+              "verification_failed"
             ]
           },
           "error_ref": {
@@ -3463,12 +4196,283 @@
             "type": "string",
             "format": "date-time"
           },
+          "received_at": {
+            "type": "string",
+            "format": "date-time"
+          },
           "completed_at": {
             "type": "string",
             "format": "date-time"
           }
         },
         "allOf": [
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.queued"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "queued"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.leased"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "leased"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.accepted"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "accepted"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.started"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "running"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.executing"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "executing"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.progress"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "running",
+                    "executing"
+                  ]
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.verification.started"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "verifying"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.verified"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "succeeded"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.failed"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "failed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.cancelled"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "cancelled"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.expired"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "expired"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "lease.renewed"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "state": {
+                  "const": "leased"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
           {
             "if": {
               "properties": {
@@ -3521,6 +4525,7 @@
                     "missing_field",
                     "invalid_identifier",
                     "invalid_action",
+                    "quarantined_action",
                     "forbidden_action",
                     "forbidden_field",
                     "raw_secret_not_allowed",
@@ -3539,8 +4544,49 @@
                     "lease_expired",
                     "receipt_conflict",
                     "release_not_immutable",
-                    "evidence_not_found"
+                    "evidence_not_found",
+                    "stale_observation",
+                    "verification_failed"
                   ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "command.verified"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "required": [
+                "observation_version",
+                "evidence_refs",
+                "completed_at"
+              ],
+              "properties": {
+                "observation_version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(?:ref|id|hint|sha256):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "minItems": 1
+                },
+                "completed_at": {
+                  "type": "string",
+                  "format": "date-time"
                 }
               }
             }
@@ -3572,7 +4618,8 @@
           "risk_level",
           "requested_by",
           "decision",
-          "expires_at"
+          "expires_at",
+          "scope"
         ],
         "properties": {
           "schema_version": {
@@ -3658,29 +4705,13 @@
           },
           "action": {
             "enum": [
-              "snapshot.collect",
-              "deployment.provision",
-              "deployment.start",
-              "deployment.stop",
-              "deployment.suspend",
-              "deployment.resume",
-              "deployment.delete",
-              "credential.revoke",
-              "probe.run",
-              "contract.test",
-              "smoke.test",
-              "upstream.check",
-              "config.stage",
               "config.apply",
-              "config.apply-user",
-              "backup.create",
-              "backup.verify",
               "backup.restore",
-              "backup.expire",
-              "release.stage",
               "release.apply",
               "release.rollback",
-              "service.restart"
+              "service.restart",
+              "deployment.delete",
+              "credential.revoke"
             ]
           },
           "risk_level": {
@@ -3734,6 +4765,8 @@
             "additionalProperties": false,
             "required": [
               "deployment_id",
+              "organization_id",
+              "user_id",
               "agent_id",
               "server_id"
             ],
@@ -3786,6 +4819,29 @@
                   "type": "string",
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                 },
+                "decided_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "decision": {
+                  "const": "expired"
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "then": {
+              "required": [
+                "decided_at"
+              ],
+              "properties": {
                 "decided_at": {
                   "type": "string",
                   "format": "date-time"
@@ -3944,8 +5000,8 @@
           },
           "version": {
             "type": "string",
-            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-            "maxLength": 64
+            "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+            "maxLength": 128
           },
           "channel": {
             "enum": [
@@ -3965,8 +5021,8 @@
           },
           "contracts_version": {
             "type": "string",
-            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-            "maxLength": 64
+            "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+            "maxLength": 128
           },
           "immutable": {
             "const": true
@@ -4002,8 +5058,8 @@
                 },
                 "version": {
                   "type": "string",
-                  "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                  "maxLength": 64
+                  "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                  "maxLength": 128
                 },
                 "ref": {
                   "type": "string",
@@ -4049,23 +5105,23 @@
             "properties": {
               "contracts_min": {
                 "type": "string",
-                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                "maxLength": 64
+                "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                "maxLength": 128
               },
               "contracts_max": {
                 "type": "string",
-                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                "maxLength": 64
+                "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                "maxLength": 128
               },
               "agent_min": {
                 "type": "string",
-                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                "maxLength": 64
+                "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                "maxLength": 128
               },
               "platform_min": {
                 "type": "string",
-                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
-                "maxLength": 64
+                "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+                "maxLength": 128
               },
               "rollback_release_id": {
                 "type": "string",
@@ -4086,7 +5142,46 @@
             "type": "string",
             "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "approved",
+                    "rolling_out",
+                    "released"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "sbom_ref",
+                "provenance_ref",
+                "attestation_ref"
+              ],
+              "properties": {
+                "sbom_ref": {
+                  "type": "string",
+                  "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "provenance_ref": {
+                  "type": "string",
+                  "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                },
+                "attestation_ref": {
+                  "type": "string",
+                  "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                }
+              }
+            }
+          }
+        ]
       },
       "LeaseRequestEnvelope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -4231,6 +5326,7 @@
           "signature",
           "lease_id",
           "lease_expires_at",
+          "issued_at",
           "commands"
         ],
         "properties": {
@@ -4335,7 +5431,8 @@
                 "attempt",
                 "lease_id",
                 "lease_token",
-                "lease_expires_at"
+                "lease_expires_at",
+                "placement"
               ],
               "properties": {
                 "schema_version": {
@@ -4369,7 +5466,6 @@
                     "upstream.check",
                     "config.stage",
                     "config.apply",
-                    "config.apply-user",
                     "backup.create",
                     "backup.verify",
                     "backup.restore",
@@ -4419,6 +5515,15 @@
                 "created_at": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "secret_refs": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^sr_[A-Za-z0-9_-]{16,128}$"
+                  }
                 },
                 "attempt": {
                   "type": "integer",
@@ -4920,35 +6025,6 @@
                   "if": {
                     "properties": {
                       "action": {
-                        "const": "config.apply-user"
-                      }
-                    },
-                    "required": [
-                      "action"
-                    ]
-                  },
-                  "then": {
-                    "properties": {
-                      "arguments": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "config_revision_id"
-                        ],
-                        "properties": {
-                          "config_revision_id": {
-                            "type": "string",
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                {
-                  "if": {
-                    "properties": {
-                      "action": {
                         "const": "backup.create"
                       }
                     },
@@ -5263,12 +6339,14 @@
           "sequence",
           "signature",
           "receipt_id",
+          "deployment_id",
           "lease_id",
           "lease_token",
           "command_id",
           "attempt",
           "state",
           "event_sequence",
+          "source_identity",
           "observed_at"
         ],
         "properties": {
@@ -5349,6 +6427,10 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
           },
+          "deployment_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
           "lease_id": {
             "type": "string",
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
@@ -5370,14 +6452,21 @@
               "accepted",
               "running",
               "executing",
-              "verifying",
-              "succeeded",
+              "completion_candidate",
               "failed",
               "cancelled",
               "expired"
             ]
           },
           "event_sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "source_identity": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "observation_version": {
             "type": "integer",
             "minimum": 1
           },
@@ -5397,6 +6486,7 @@
               "missing_field",
               "invalid_identifier",
               "invalid_action",
+              "quarantined_action",
               "forbidden_action",
               "forbidden_field",
               "raw_secret_not_allowed",
@@ -5415,7 +6505,9 @@
               "lease_expired",
               "receipt_conflict",
               "release_not_immutable",
-              "evidence_not_found"
+              "evidence_not_found",
+              "stale_observation",
+              "verification_failed"
             ]
           },
           "error_ref": {
@@ -5446,7 +6538,7 @@
               "properties": {
                 "state": {
                   "enum": [
-                    "succeeded",
+                    "completion_candidate",
                     "failed",
                     "cancelled",
                     "expired"
@@ -5493,6 +6585,7 @@
                     "missing_field",
                     "invalid_identifier",
                     "invalid_action",
+                    "quarantined_action",
                     "forbidden_action",
                     "forbidden_field",
                     "raw_secret_not_allowed",
@@ -5511,8 +6604,44 @@
                     "lease_expired",
                     "receipt_conflict",
                     "release_not_immutable",
-                    "evidence_not_found"
+                    "evidence_not_found",
+                    "stale_observation",
+                    "verification_failed"
                   ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "completion_candidate"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            },
+            "then": {
+              "required": [
+                "observation_version",
+                "evidence_refs"
+              ],
+              "properties": {
+                "observation_version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(?:ref|id|hint|sha256):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+                  },
+                  "minItems": 1
                 }
               }
             }
@@ -5545,6 +6674,7 @@
               "missing_field",
               "invalid_identifier",
               "invalid_action",
+              "quarantined_action",
               "forbidden_action",
               "forbidden_field",
               "raw_secret_not_allowed",
@@ -5563,7 +6693,9 @@
               "lease_expired",
               "receipt_conflict",
               "release_not_immutable",
-              "evidence_not_found"
+              "evidence_not_found",
+              "stale_observation",
+              "verification_failed"
             ]
           },
           "retryable": {

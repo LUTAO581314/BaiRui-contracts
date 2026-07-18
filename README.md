@@ -9,7 +9,8 @@ The package owns versioned JSON Schema and OpenAPI contracts for:
 - the Organization, User, Agent, Runtime, Workspace, and Conversation identity
   hierarchy and mandatory Agent owner scope;
 - Runtime requests and operations;
-- Control Plane commands;
+- signed Control Plane desired state, observations, commands, events,
+  approvals, release manifests, command leases, receipts, and safe errors;
 - Runtime and host telemetry;
 - owner-scoped Runtime and Channel credential resolution requests and
   responses;
@@ -22,6 +23,8 @@ The package owns versioned JSON Schema and OpenAPI contracts for:
 
 The normative ownership rules and 404/403 behavior are defined in
 [`docs/IDENTITY-AND-OWNERSHIP.md`](docs/IDENTITY-AND-OWNERSHIP.md).
+The C00-02 consumer migration and real-server acceptance requirements are in
+[`docs/C00-02-CONSUMER-MIGRATION.md`](docs/C00-02-CONSUMER-MIGRATION.md).
 
 Consumers must pin an immutable Git tag. Production must never consume a branch
 or an unversioned archive.

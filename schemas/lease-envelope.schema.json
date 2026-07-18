@@ -19,6 +19,7 @@
     "signature",
     "lease_id",
     "lease_expires_at",
+    "issued_at",
     "commands"
   ],
   "properties": {
@@ -123,7 +124,8 @@
           "attempt",
           "lease_id",
           "lease_token",
-          "lease_expires_at"
+          "lease_expires_at",
+          "placement"
         ],
         "properties": {
           "schema_version": {
@@ -157,7 +159,6 @@
               "upstream.check",
               "config.stage",
               "config.apply",
-              "config.apply-user",
               "backup.create",
               "backup.verify",
               "backup.restore",
@@ -207,6 +208,15 @@
           "created_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "secret_refs": {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^sr_[A-Za-z0-9_-]{16,128}$"
+            }
           },
           "attempt": {
             "type": "integer",
@@ -680,35 +690,6 @@
               "properties": {
                 "action": {
                   "const": "config.apply"
-                }
-              },
-              "required": [
-                "action"
-              ]
-            },
-            "then": {
-              "properties": {
-                "arguments": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "config_revision_id"
-                  ],
-                  "properties": {
-                    "config_revision_id": {
-                      "type": "string",
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "action": {
-                  "const": "config.apply-user"
                 }
               },
               "required": [

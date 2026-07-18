@@ -18,14 +18,17 @@
   },
   "event_id": "event_1",
   "event_sequence": 1,
+  "deployment_id": "deployment_1",
   "command_id": "command_1",
   "action": "deployment.start",
   "attempt": 1,
   "state": "accepted",
   "event_type": "command.accepted",
+  "source_identity": "server_machine_1",
   "lease_id": "lease_1",
   "lease_token": "ref:lease-token-1",
   "observation_version": 1,
   "evidence_refs": ["ref:acceptance-1"],
-  "occurred_at": "2026-07-18T00:02:02Z"
+  "occurred_at": "2026-07-18T00:02:02Z",
+  "received_at": "2026-07-18T00:02:03Z"
 }
