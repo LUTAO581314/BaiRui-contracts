@@ -65,15 +65,17 @@ export const RUNTIME_OPERATIONS = Object.freeze([
   // Explicit Hermes management ports. These are stable capability names, not
   // arbitrary URL passthroughs. The Agent bridge owns the route mapping.
   "provider.catalog", "provider.validate", "provider.oauth.list", "provider.oauth.start", "provider.oauth.submit", "provider.oauth.poll", "provider.oauth.cancel",
-  "model.info", "model.options", "model.auxiliary", "model.set", "model.moa.get", "model.moa.set",
-  "toolsets.list", "toolsets.update", "toolsets.config", "toolsets.model", "toolsets.provider", "toolsets.post_setup",
-  "skills.list", "skills.toggle", "skills.content", "skills.hub.sources", "skills.hub.search", "skills.hub.preview", "skills.hub.scan", "skills.hub.install", "skills.hub.update", "skills.hub.uninstall",
-  "mcp.list", "mcp.catalog", "mcp.create", "mcp.update", "mcp.delete", "mcp.test", "mcp.auth", "mcp.enabled",
-  "profiles.list", "profiles.active.get", "profiles.active.set", "profiles.create", "profiles.get", "profiles.update", "profiles.delete", "profiles.soul.get", "profiles.soul.set", "profiles.description.set", "profiles.model.set",
-  "cron.history", "cron.delivery_targets", "cron.blueprints", "cron.blueprint.instantiate",
+  "model.info", "model.options", "model.recommended", "model.auxiliary", "model.set", "model.moa.get", "model.moa.set",
+  "toolsets.list", "toolsets.update", "toolsets.config", "toolsets.models", "toolsets.model", "toolsets.provider", "toolsets.post_setup",
+  "skills.list", "skills.toggle", "skills.content", "skills.create", "skills.update", "skills.hub.sources", "skills.hub.search", "skills.hub.preview", "skills.hub.scan", "skills.hub.install", "skills.hub.update", "skills.hub.uninstall",
+  "memory.status", "memory.provider.config", "memory.provider.setup", "memory.provider.set", "memory.provider.oauth.start", "memory.provider.oauth.status", "memory.reset", "memory.learning.graph", "memory.learning.node.get", "memory.learning.node.update", "memory.learning.node.delete", "memory.curator.get", "memory.curator.pause", "memory.curator.run",
+  "mcp.list", "mcp.catalog", "mcp.catalog.install", "mcp.create", "mcp.update", "mcp.delete", "mcp.test", "mcp.auth", "mcp.enabled",
+  "profiles.list", "profiles.active.get", "profiles.active.set", "profiles.create", "profiles.get", "profiles.update", "profiles.delete", "profiles.soul.get", "profiles.soul.set", "profiles.description.set", "profiles.model.set", "profiles.setup-command",
+  "cron.list", "cron.get", "cron.create", "cron.update", "cron.pause", "cron.resume", "cron.trigger", "cron.delete", "cron.history", "cron.delivery_targets", "cron.blueprints", "cron.blueprint.instantiate",
+  "channel.platforms", "channel.platform.test", "channel.pairing.list", "channel.pairing.approve", "channel.pairing.revoke", "channel.pairing.clear",
   "analytics.usage", "analytics.models",
-  "diagnostics.status", "diagnostics.doctor", "diagnostics.security_audit", "diagnostics.checkpoints", "diagnostics.backup",
-  "files.list", "files.read", "files.write", "files.upload", "files.mkdir", "files.delete"
+  "diagnostics.status", "diagnostics.system.stats", "diagnostics.doctor", "diagnostics.security_audit", "diagnostics.checkpoints", "diagnostics.backup", "diagnostics.debug_share",
+  "files.list", "files.read", "files.read-data-url", "files.download", "files.write", "files.upload", "files.mkdir", "files.delete"
 ]);
 
 export const RUNTIME_STREAM_OPERATIONS = Object.freeze(["sessions.chat.stream", "runs.events"]);
