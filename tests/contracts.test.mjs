@@ -5,6 +5,9 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   CONTROL_ACTIONS,
+  CONTROL_COMPATIBILITY_WINDOW,
+  CONTROL_ERROR_CODES,
+  CONTROL_MUTATION_FIELDS,
   ContractValidationError,
   validateAgentOwnerScope,
   validateArtifactPointer,
@@ -18,13 +21,25 @@ import {
   validateChannelHealthReport,
   validateChannelIngress,
   validateChannelIngressAck,
+  validateApproval,
   validateControlCommand,
+  validateControlCommandEnvelope,
+  validateCommandEvent,
+  validateControlError,
+  validateDesiredState,
+  validateHeartbeat,
+  validateLeaseEnvelope,
+  validateLeaseRequestEnvelope,
+  validateObservation,
   validateCredentialResolution,
   validateCredentialResolutionRequest,
+  validateReceiptEnvelope,
+  validateReleaseManifest,
   validateIntegrationRequestEnvelope,
   validateIntegrationResult,
   validateMemoryProjection,
   validateResourceReport,
+  validateResourceSample,
   validateRuntimeHeartbeat,
   validateRuntimeOperationEnvelope,
   validateRuntimeRequestEnvelope
@@ -35,6 +50,10 @@ const now = new Date().toISOString();
 const later = new Date(Date.now() + 60_000).toISOString();
 const agentScope = { organization_id: "org_1", user_id: "user_1", agent_id: "agent_1" };
 const runtimeScope = { ...agentScope, runtime_id: "runtime_1", workspace_id: "workspace_1" };
+
+function fixture(relative) {
+  return JSON.parse(fs.readFileSync(path.join(root, "tests", "fixtures", "control-plane", relative), "utf8"));
+}
 
 function command(action, args, extra = {}) {
   return {
@@ -154,6 +173,56 @@ test("resource telemetry accepts an empty fleet heartbeat", () => {
   assert.throws(() => validateResourceReport({ ...report, status: "healthy" }), ContractValidationError);
 });
 
+test("C00-02 fixtures validate new mutations and legacy aliases", () => {
+  assert.equal(validateDesiredState(fixture("valid/desired-state.json")).version, 1);
+  assert.equal(validateObservation(fixture("valid/observation.json")).status, "healthy");
+  assert.equal(validateCommandEvent(fixture("valid/command-event.json")).state, "accepted");
+  assert.equal(validateApproval(fixture("valid/approval.json")).decision, "approved");
+  assert.equal(validateReleaseManifest(fixture("valid/release-manifest.json")).immutable, true);
+  assert.equal(validateLeaseRequestEnvelope(fixture("valid/lease-request-envelope.json")).limit, 5);
+  assert.equal(validateLeaseEnvelope(fixture("valid/lease-envelope.json")).commands.length, 1);
+  assert.equal(validateReceiptEnvelope(fixture("valid/receipt-envelope.json")).state, "succeeded");
+  assert.equal(validateControlError(fixture("valid/control-error.json")).error_code, "approval_not_valid");
+  assert.equal(validateControlCommand(fixture("valid/legacy-control-command.json")).action, "deployment.start");
+  assert.equal(validateHeartbeat(fixture("valid/legacy-heartbeat.json")).status, "healthy");
+  assert.equal(validateResourceReport(fixture("valid/legacy-resource-report.json")).samples.length, 0);
+  assert.equal(validateResourceSample(fixture("valid/resource-sample.json")).agentId, "agent_1");
+});
+
+test("C00-02 publishes mutation fields, compatibility window, and stable error codes", () => {
+  for (const field of ["organization_id", "user_id", "agent_id", "server_id", "request_id", "correlation_id", "idempotency_key", "created_at", "revision", "sequence"]) {
+    assert.ok(CONTROL_MUTATION_FIELDS.includes(field), field);
+  }
+  assert.equal(CONTROL_COMPATIBILITY_WINDOW.legacy_contracts_range, "2.2.x");
+  assert.equal(CONTROL_COMPATIBILITY_WINDOW.implicit_conversion, false);
+  assert.ok(CONTROL_ERROR_CODES.includes("raw_secret_not_allowed"));
+  assert.ok(CONTROL_ERROR_CODES.includes("receipt_conflict"));
+});
+
+test("C00-02 rejects missing mutation metadata, business actions, raw fields, and broken leases", () => {
+  assert.throws(() => validateDesiredState(fixture("invalid/missing-mutation-fields.json")), ContractValidationError);
+  assert.throws(() => validateCommandEvent(fixture("invalid/forbidden-action.json")), ContractValidationError);
+  assert.throws(() => validateReleaseManifest(fixture("invalid/raw-secret-field.json")), ContractValidationError);
+  assert.throws(() => validateLeaseEnvelope(fixture("invalid/lease-binding.json")), ContractValidationError);
+});
+
+test("control command envelopes preserve the legacy command shape inside signed metadata", () => {
+  const envelope = {
+    ...fixture("valid/desired-state.json"),
+    command: fixture("valid/legacy-control-command.json")
+  };
+  delete envelope.deployment_id;
+  delete envelope.version;
+  delete envelope.module_versions;
+  delete envelope.updated_at;
+  delete envelope.state;
+  delete envelope.config_revision_id;
+  delete envelope.release_id;
+  delete envelope.modules;
+  delete envelope.valid_from;
+  assert.equal(validateControlCommandEnvelope(envelope).command.action, "deployment.start");
+});
+
 test("credential contracts validate structure without echoing values in errors", () => {
   const request = { schema_version: "2.0", owner_scope: runtimeScope, authorization_id: "auth_1", expected_service: "firecrawl", trace: { correlation_id: "request_1" } };
   assert.equal(validateCredentialResolutionRequest(request).owner_scope.runtime_id, "runtime_1");
@@ -239,8 +308,8 @@ test("channel inventory exposes binding metadata without credentials or content"
   assert.throws(() => validateChannelBindingInventory({ ...inventory, prompt: "must-not-pass" }), ContractValidationError);
 });
 
-test("OpenAPI, schemas, and generated declarations are committed", () => {
-  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/agent-owner-scope.schema.json", "schemas/artifact-pointer.schema.json", "schemas/credential-resolution-request.schema.json", "schemas/channel-credential-resolution-request.schema.json", "schemas/control-command.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
+test("OpenAPI, schemas, fixtures, and generated declarations are committed", () => {
+  for (const relative of ["openapi/bairui-internal.openapi.json", "schemas/agent-owner-scope.schema.json", "schemas/artifact-pointer.schema.json", "schemas/credential-resolution-request.schema.json", "schemas/channel-credential-resolution-request.schema.json", "schemas/control-command.schema.json", "schemas/control-command-envelope.schema.json", "schemas/desired-state.schema.json", "schemas/observation.schema.json", "schemas/command-event.schema.json", "schemas/approval.schema.json", "schemas/release-manifest.schema.json", "schemas/lease-request-envelope.schema.json", "schemas/lease-envelope.schema.json", "schemas/receipt-envelope.schema.json", "schemas/control-error.schema.json", "schemas/runtime-heartbeat.schema.json", "schemas/heartbeat.schema.json", "schemas/resource-sample.schema.json", "schemas/channel-ingress.schema.json", "schemas/channel-delivery-receipt.schema.json", "schemas/channel-health-report.schema.json", "dist/index.d.ts"]) {
     assert.equal(fs.existsSync(path.join(root, relative)), true, relative);
   }
 });

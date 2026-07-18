@@ -10,8 +10,19 @@ import {
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
+  CONTROL_APPROVAL_DECISIONS,
   CONTROL_COMMAND_STATES,
+  CONTROL_COMPATIBILITY_WINDOW,
+  CONTROL_DESIRED_STATES,
+  CONTROL_ERROR_CODES,
+  CONTROL_EVENT_STATES,
+  CONTROL_MUTATION_FIELDS,
   CONTROL_PROTOCOL_VERSION,
+  CONTROL_RECEIPT_STATES,
+  CONTROL_RELEASE_STATUSES,
+  CONTROL_RISK_LEVELS,
+  CONTROL_SCHEMA_VERSION,
+  CONTROL_SIGNATURE_ALGORITHMS,
   DATA_PROTOCOL_VERSION,
   IDENTITY_KINDS,
   MODULE_LAYERS,
@@ -107,6 +118,98 @@ function sameOwner(left, right) {
   return ["organization_id", "user_id", "agent_id"].every((field) => left[field] === right[field]);
 }
 
+function assertAfter(contract, before, after, instancePath) {
+  if (Date.parse(after) < Date.parse(before)) {
+    throw new ContractValidationError(contract, [{
+      instancePath,
+      schemaPath: "#/semantic",
+      keyword: "after",
+      params: {},
+      message: "must not be before the preceding event time"
+    }]);
+  }
+}
+
+function validateMutation(contract, value) {
+  const mutation = assertContract(contract, value);
+  if (mutation.updated_at) assertAfter(contract, mutation.created_at, mutation.updated_at, "/updated_at");
+  return mutation;
+}
+
+export function validateControlCommandEnvelope(value) {
+  const envelope = validateMutation("control-command-envelope", value);
+  validateControlCommand(envelope.command);
+  return envelope;
+}
+
+export function validateDesiredState(value) {
+  const state = validateMutation("desired-state", value);
+  if (state.expires_at) assertAfter("desired-state", state.created_at, state.expires_at, "/expires_at");
+  if (state.valid_from) assertAfter("desired-state", state.created_at, state.valid_from, "/valid_from");
+  return state;
+}
+
+export function validateObservation(value) {
+  const observation = validateMutation("observation", value);
+  assertAfter("observation", observation.created_at, observation.observed_at, "/observed_at");
+  if (observation.received_at) assertAfter("observation", observation.observed_at, observation.received_at, "/received_at");
+  return observation;
+}
+export const validateControlObservation = validateObservation;
+
+export function validateCommandEvent(value) {
+  const event = validateMutation("command-event", value);
+  assertAfter("command-event", event.created_at, event.occurred_at, "/occurred_at");
+  if (event.completed_at) assertAfter("command-event", event.occurred_at, event.completed_at, "/completed_at");
+  return event;
+}
+export const validateControlCommandEvent = validateCommandEvent;
+
+export function validateApproval(value) {
+  const approval = validateMutation("approval", value);
+  if (Date.parse(approval.expires_at) <= Date.parse(approval.created_at)) {
+    throw new ContractValidationError("approval", [{ instancePath: "/expires_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after created_at" }]);
+  }
+  if (approval.decided_at) assertAfter("approval", approval.created_at, approval.decided_at, "/decided_at");
+  if (approval.decided_at && Date.parse(approval.decided_at) > Date.parse(approval.expires_at)) {
+    throw new ContractValidationError("approval", [{ instancePath: "/decided_at", schemaPath: "#/semantic", keyword: "before", params: {}, message: "must not be after expires_at" }]);
+  }
+  return approval;
+}
+export const validateControlApproval = validateApproval;
+
+export function validateReleaseManifest(value) {
+  const manifest = validateMutation("release-manifest", value);
+  const prerelease = manifest.version.includes("-");
+  if ((manifest.channel === "prerelease") !== prerelease) {
+    throw new ContractValidationError("release-manifest", [{ instancePath: "/channel", schemaPath: "#/semantic", keyword: "channel", params: {}, message: "must match the version prerelease marker" }]);
+  }
+  return manifest;
+}
+
+export const validateLeaseRequestEnvelope = (value) => validateMutation("lease-request-envelope", value);
+
+export function validateLeaseEnvelope(value) {
+  const lease = validateMutation("lease-envelope", value);
+  if (Date.parse(lease.lease_expires_at) <= Date.parse(lease.created_at)) {
+    throw new ContractValidationError("lease-envelope", [{ instancePath: "/lease_expires_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after created_at" }]);
+  }
+  for (const [index, command] of lease.commands.entries()) {
+    if (command.lease_id !== lease.lease_id) semanticIssue("lease-envelope", `/commands/${index}/lease_id`, "must match lease_id");
+    if (Date.parse(command.lease_expires_at) > Date.parse(lease.lease_expires_at)) semanticIssue("lease-envelope", `/commands/${index}/lease_expires_at`, "must not outlive lease_expires_at");
+  }
+  return lease;
+}
+
+export function validateReceiptEnvelope(value) {
+  const receipt = validateMutation("receipt-envelope", value);
+  assertAfter("receipt-envelope", receipt.created_at, receipt.observed_at, "/observed_at");
+  if (receipt.completed_at) assertAfter("receipt-envelope", receipt.observed_at, receipt.completed_at, "/completed_at");
+  return receipt;
+}
+
+export const validateControlError = (value) => assertContract("control-error", value);
+
 export const validateAgentOwnerScope = (value) => assertContract("agent-owner-scope", value);
 export const validateArtifactPointer = (value) => assertContract("artifact-pointer", value);
 export const validateRuntimeOperationEnvelope = (value) => validateRuntimeOperation("runtime-operation-envelope", value);
@@ -116,6 +219,8 @@ export const validateScenePatch = (value) => assertContract("scene-patch", value
 export const validateSceneIntent = (value) => assertContract("scene-intent", value);
 export const validateRuntimeHeartbeat = (value) => assertContract("runtime-heartbeat", value);
 export const validateResourceReport = (value) => assertContract("resource-report", value);
+export const validateHeartbeat = (value) => assertContract("heartbeat", value);
+export const validateResourceSample = (value) => assertContract("resource-sample", value);
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
 export const validateCredentialResolutionRequest = (value) => assertContract("credential-resolution-request", value);
 export const validateMemoryProjection = (value) => assertContract("memory-projection", value);
@@ -161,8 +266,19 @@ export {
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
+  CONTROL_APPROVAL_DECISIONS,
   CONTROL_COMMAND_STATES,
+  CONTROL_COMPATIBILITY_WINDOW,
+  CONTROL_DESIRED_STATES,
+  CONTROL_ERROR_CODES,
+  CONTROL_EVENT_STATES,
+  CONTROL_MUTATION_FIELDS,
   CONTROL_PROTOCOL_VERSION,
+  CONTROL_RECEIPT_STATES,
+  CONTROL_RELEASE_STATUSES,
+  CONTROL_RISK_LEVELS,
+  CONTROL_SCHEMA_VERSION,
+  CONTROL_SIGNATURE_ALGORITHMS,
   DATA_PROTOCOL_VERSION,
   IDENTITY_KINDS,
   MODULE_LAYERS,

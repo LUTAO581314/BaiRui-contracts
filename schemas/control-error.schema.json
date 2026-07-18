@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v2/control-error.schema.json",
+  "title": "ControlError",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "error_code",
+    "retryable",
+    "request_id",
+    "correlation_id",
+    "occurred_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "error_code": {
+      "enum": [
+        "invalid_schema_version",
+        "unsupported_schema_version",
+        "unknown_field",
+        "missing_field",
+        "invalid_identifier",
+        "invalid_action",
+        "forbidden_action",
+        "forbidden_field",
+        "raw_secret_not_allowed",
+        "invalid_signature",
+        "signature_key_unknown",
+        "signature_expired",
+        "replay_detected",
+        "idempotency_conflict",
+        "revision_conflict",
+        "sequence_conflict",
+        "owner_mismatch",
+        "server_mismatch",
+        "approval_required",
+        "approval_not_valid",
+        "lease_not_found",
+        "lease_expired",
+        "receipt_conflict",
+        "release_not_immutable",
+        "evidence_not_found"
+      ]
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "correlation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "field": {
+      "type": "string",
+      "pattern": "^/[A-Za-z0-9_./-]{1,255}$"
+    },
+    "ref": {
+      "type": "string",
+      "pattern": "^(?:ref|id|hint):[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

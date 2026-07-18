@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v2/heartbeat.schema.json",
+  "title": "Heartbeat",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizationId",
+    "userId",
+    "agentId",
+    "runtimeId",
+    "sequence",
+    "status",
+    "queueDepth",
+    "activeRuns",
+    "failedRuns",
+    "observedAt",
+    "components",
+    "events"
+  ],
+  "properties": {
+    "organizationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "userId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "agentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "runtimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "healthy",
+        "degraded",
+        "unhealthy",
+        "unknown"
+      ]
+    },
+    "runtimeVersion": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "boundaryVersion": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "configRevisionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "queueDepth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "activeRuns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failedRuns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "components": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "layer",
+          "moduleId",
+          "status",
+          "version",
+          "capabilities",
+          "metrics",
+          "observedAt"
+        ],
+        "properties": {
+          "layer": {
+            "enum": [
+              "core-runtime",
+              "service-integration",
+              "data-storage",
+              "channel-bridge",
+              "ui-exposure"
+            ]
+          },
+          "moduleId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "status": {
+            "enum": [
+              "healthy",
+              "degraded",
+              "unhealthy",
+              "unknown"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "upstreamRef": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventType",
+          "severity",
+          "metrics",
+          "occurredAt"
+        ],
+        "properties": {
+          "layer": {
+            "enum": [
+              "core-runtime",
+              "service-integration",
+              "data-storage",
+              "channel-bridge",
+              "ui-exposure"
+            ]
+          },
+          "componentId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "eventType": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "severity": {
+            "enum": [
+              "debug",
+              "info",
+              "warning",
+              "error",
+              "critical"
+            ]
+          },
+          "traceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucketStart",
+        "bucketSeconds",
+        "inputTokens",
+        "outputTokens",
+        "estimatedCostUsd",
+        "runCount",
+        "failedRunCount",
+        "latencySumMs"
+      ],
+      "properties": {
+        "bucketStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "bucketSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "inputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "estimatedCostUsd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "runCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failedRunCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "latencySumMs": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

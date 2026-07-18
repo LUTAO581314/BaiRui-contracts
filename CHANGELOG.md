@@ -1,5 +1,35 @@
 # Changelog
 
+## 2.3.0-rc.1
+
+- Add the C00-02 control contract surfaces for `DesiredState`, `Observation`,
+  `CommandEvent`, `Approval`, `ReleaseManifest`, `ControlCommandEnvelope`, and
+  signed lease request, lease grant, receipt, and control-error envelopes.
+- Require new control mutations to carry organization, user, agent, server,
+  request, correlation, idempotency, creation time, revision, sequence, and a
+  verifiable signature descriptor. Apart from non-secret signature material,
+  payloads contain references and evidence identifiers only; configuration
+  documents and secret values are not valid control fields.
+- Add allow-listed event states, safe control error codes, redacted observation
+  records, immutable release artifact references, and lease/receipt binding
+  checks.
+- Preserve the accepted `ControlCommand` 1.0, `RuntimeHeartbeat` 2.0, and
+  `ResourceReport` 2.0 payloads. The `Heartbeat` schema/validator is a
+  compatibility alias for the existing heartbeat contract; `ResourceSample` is
+  the existing sample item shape. Legacy `ControlCommand` remains accepted as
+  the unsigned 1.0 payload and is wrapped by `ControlCommandEnvelope` for new
+  signed mutations.
+- Compatibility window: 2.2.x consumers may continue reading the legacy
+  contracts throughout the 2.3.x line; removal requires a later 2.4.0+ decision
+  and changelog entry. New producers should dual-read legacy payloads and emit
+  the 2.3 control envelopes only after the consumer advertises control schema
+  1.0 support. No implicit field conversion is defined.
+- Control error codes include `invalid_schema_version`, `unknown_field`,
+  `raw_secret_not_allowed`, `invalid_signature`, `replay_detected`,
+  `idempotency_conflict`, `revision_conflict`, `sequence_conflict`,
+  `approval_not_valid`, `lease_expired`, `receipt_conflict`, and
+  `release_not_immutable`.
+
 ## 2.2.1
 
 - Align the Runtime operation contract with the complete Hermes management

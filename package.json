@@ -1,7 +1,7 @@
 {
   "name": "@bairui/contracts",
-  "version": "2.2.1",
-  "description": "Versioned identity, runtime, control-plane, telemetry, credential, memory, artifact, channel, and integration contracts for BaiRui Agent.",
+  "version": "2.3.0-rc.1",
+  "description": "Versioned identity, deployment-control, runtime, telemetry, credential, memory, artifact, channel, and integration contracts for BaiRui Agent.",
   "type": "module",
   "license": "UNLICENSED",
   "packageManager": "pnpm@11.7.0",
