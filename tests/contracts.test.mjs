@@ -158,7 +158,7 @@ test("credential contracts validate structure without echoing values in errors",
   const request = { schema_version: "2.0", owner_scope: runtimeScope, authorization_id: "auth_1", expected_service: "firecrawl", trace: { correlation_id: "request_1" } };
   assert.equal(validateCredentialResolutionRequest(request).owner_scope.runtime_id, "runtime_1");
   assert.throws(() => validateCredentialResolutionRequest({ ...request, owner_scope: agentScope }), ContractValidationError);
-  const value = { schema_version: "2.0", owner_scope: agentScope, authorization: { id: "auth_1", service: "firecrawl", label: "Personal Firecrawl", authType: "api_key", endpointUrl: "https://api.firecrawl.dev", metadata: {} }, credential: { secret: "secret-value" } };
+  const value = { schema_version: "2.0", owner_scope: runtimeScope, authorization: { id: "auth_1", service: "firecrawl", label: "Personal Firecrawl", authType: "api_key", endpointUrl: "https://api.firecrawl.dev", metadata: {} }, credential: { secret: "secret-value" } };
   assert.equal(validateCredentialResolution(value).authorization.service, "firecrawl");
   try { validateCredentialResolution({ ...value, unexpected: value.credential.secret }); }
   catch (error) { assert.doesNotMatch(JSON.stringify(error), /secret-value/); return; }

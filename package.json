@@ -1,6 +1,6 @@
 {
   "name": "@bairui/contracts",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "Versioned identity, runtime, control-plane, telemetry, credential, memory, artifact, channel, and integration contracts for BaiRui Agent.",
   "type": "module",
   "license": "UNLICENSED",
