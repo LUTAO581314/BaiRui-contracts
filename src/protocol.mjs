@@ -1,4 +1,4 @@
-export const CONTRACTS_VERSION = "2.1.0";
+export const CONTRACTS_VERSION = "2.2.0";
 export const CONTROL_PROTOCOL_VERSION = "1.0";
 export const CHANNEL_PROTOCOL_VERSION = "2.0";
 export const RUNTIME_PROTOCOL_VERSION = "2.0";
@@ -61,9 +61,22 @@ export const RUNTIME_OPERATIONS = Object.freeze([
   "sessions.list", "sessions.create", "sessions.get", "sessions.update", "sessions.delete", "sessions.messages", "sessions.fork", "sessions.chat",
   "runs.create", "runs.get", "runs.approve", "runs.stop",
   "jobs.list", "jobs.create", "jobs.get", "jobs.update", "jobs.delete", "jobs.pause", "jobs.resume", "jobs.run",
-  "memory.snapshot", "memory.apply"
+  "memory.snapshot", "memory.apply",
+  // Explicit Hermes management ports. These are stable capability names, not
+  // arbitrary URL passthroughs. The Agent bridge owns the route mapping.
+  "provider.catalog", "provider.validate", "provider.oauth.list", "provider.oauth.start", "provider.oauth.submit", "provider.oauth.poll", "provider.oauth.cancel",
+  "model.info", "model.options", "model.auxiliary", "model.set", "model.moa.get", "model.moa.set",
+  "toolsets.list", "toolsets.update", "toolsets.config", "toolsets.model", "toolsets.provider", "toolsets.post_setup",
+  "skills.list", "skills.toggle", "skills.content", "skills.hub.sources", "skills.hub.search", "skills.hub.preview", "skills.hub.scan", "skills.hub.install", "skills.hub.update", "skills.hub.uninstall",
+  "mcp.list", "mcp.catalog", "mcp.create", "mcp.update", "mcp.delete", "mcp.test", "mcp.auth", "mcp.enabled",
+  "profiles.list", "profiles.active.get", "profiles.active.set", "profiles.create", "profiles.get", "profiles.update", "profiles.delete", "profiles.soul.get", "profiles.soul.set", "profiles.description.set", "profiles.model.set",
+  "cron.history", "cron.delivery_targets", "cron.blueprints", "cron.blueprint.instantiate",
+  "analytics.usage", "analytics.models",
+  "diagnostics.status", "diagnostics.doctor", "diagnostics.security_audit", "diagnostics.checkpoints", "diagnostics.backup",
+  "files.list", "files.read", "files.write", "files.upload", "files.mkdir", "files.delete"
 ]);
 
 export const RUNTIME_STREAM_OPERATIONS = Object.freeze(["sessions.chat.stream", "runs.events"]);
 export const MODULE_LAYERS = Object.freeze(["core-runtime", "service-integration", "data-storage", "channel-bridge", "ui-exposure"]);
 export const MODULE_STATUSES = Object.freeze(["healthy", "degraded", "unhealthy", "unknown"]);
+

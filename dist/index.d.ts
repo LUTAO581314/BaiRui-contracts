@@ -116,7 +116,7 @@ channel_policy?: {
 
 export interface RuntimeOperationEnvelope {
 schema_version: "2.0"
-operation: ("health.detailed" | "discovery.models" | "discovery.capabilities" | "discovery.skills" | "discovery.toolsets" | "sessions.list" | "sessions.create" | "sessions.get" | "sessions.update" | "sessions.delete" | "sessions.messages" | "sessions.fork" | "sessions.chat" | "runs.create" | "runs.get" | "runs.approve" | "runs.stop" | "jobs.list" | "jobs.create" | "jobs.get" | "jobs.update" | "jobs.delete" | "jobs.pause" | "jobs.resume" | "jobs.run" | "memory.snapshot" | "memory.apply")
+operation: ("health.detailed" | "discovery.models" | "discovery.capabilities" | "discovery.skills" | "discovery.toolsets" | "sessions.list" | "sessions.create" | "sessions.get" | "sessions.update" | "sessions.delete" | "sessions.messages" | "sessions.fork" | "sessions.chat" | "runs.create" | "runs.get" | "runs.approve" | "runs.stop" | "jobs.list" | "jobs.create" | "jobs.get" | "jobs.update" | "jobs.delete" | "jobs.pause" | "jobs.resume" | "jobs.run" | "memory.snapshot" | "memory.apply" | "provider.catalog" | "provider.validate" | "provider.oauth.list" | "provider.oauth.start" | "provider.oauth.submit" | "provider.oauth.poll" | "provider.oauth.cancel" | "model.info" | "model.options" | "model.auxiliary" | "model.set" | "model.moa.get" | "model.moa.set" | "toolsets.list" | "toolsets.update" | "toolsets.config" | "toolsets.model" | "toolsets.provider" | "toolsets.post_setup" | "skills.list" | "skills.toggle" | "skills.content" | "skills.hub.sources" | "skills.hub.search" | "skills.hub.preview" | "skills.hub.scan" | "skills.hub.install" | "skills.hub.update" | "skills.hub.uninstall" | "mcp.list" | "mcp.catalog" | "mcp.create" | "mcp.update" | "mcp.delete" | "mcp.test" | "mcp.auth" | "mcp.enabled" | "profiles.list" | "profiles.active.get" | "profiles.active.set" | "profiles.create" | "profiles.get" | "profiles.update" | "profiles.delete" | "profiles.soul.get" | "profiles.soul.set" | "profiles.description.set" | "profiles.model.set" | "cron.history" | "cron.delivery_targets" | "cron.blueprints" | "cron.blueprint.instantiate" | "analytics.usage" | "analytics.models" | "diagnostics.status" | "diagnostics.doctor" | "diagnostics.security_audit" | "diagnostics.checkpoints" | "diagnostics.backup" | "files.list" | "files.read" | "files.write" | "files.upload" | "files.mkdir" | "files.delete")
 owner_scope: {
 organization_id: string
 user_id: string
@@ -175,6 +175,87 @@ span_id?: string
 created_at: string
 input: {
 [k: string]: unknown
+}
+}
+
+export interface SceneSnapshot {
+schema_version: "2.0"
+scene_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
+revision: number
+view: {
+[k: string]: unknown
+}
+generated_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface ScenePatch {
+schema_version: "2.0"
+scene_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
+base_revision: number
+revision: number
+/**
+ * @minItems 1
+ * @maxItems 200
+ */
+operations: [{
+op: ("add" | "replace" | "remove")
+path: string
+value?: unknown
+}, ...({
+op: ("add" | "replace" | "remove")
+path: string
+value?: unknown
+})[]]
+generated_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
+}
+}
+
+export interface SceneIntent {
+schema_version: "2.0"
+scene_id: string
+owner_scope: {
+organization_id: string
+user_id: string
+agent_id: string
+runtime_id?: string
+workspace_id: string
+conversation_id?: string
+}
+intent_id: string
+action: ("navigate" | "command" | "refresh" | "resync")
+payload: {
+[k: string]: unknown
+}
+created_at: string
+trace: {
+correlation_id: string
+parent_id?: string
+span_id?: string
 }
 }
 
@@ -297,7 +378,7 @@ observedAt: string
  * @maxItems 10
  */
 containers: [{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -309,7 +390,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -321,7 +402,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -333,7 +414,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -345,7 +426,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -357,7 +438,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -369,7 +450,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -381,7 +462,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -393,7 +474,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -405,7 +486,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -417,7 +498,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -429,7 +510,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -441,7 +522,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -453,7 +534,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -465,7 +546,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -477,7 +558,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -489,7 +570,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -501,7 +582,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -513,7 +594,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -525,7 +606,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -537,7 +618,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -549,7 +630,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -561,7 +642,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -573,7 +654,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -585,7 +666,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -597,7 +678,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -609,7 +690,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -621,7 +702,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -633,7 +714,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -645,7 +726,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -657,7 +738,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -669,7 +750,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -681,7 +762,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -693,7 +774,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -705,7 +786,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -717,7 +798,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -729,7 +810,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -741,7 +822,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -753,7 +834,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -765,7 +846,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -777,7 +858,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -789,7 +870,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -801,7 +882,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -813,7 +894,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -825,7 +906,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -837,7 +918,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }]|[{
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -849,7 +930,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -861,7 +942,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -873,7 +954,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -885,7 +966,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -897,7 +978,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -909,7 +990,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -921,7 +1002,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -933,7 +1014,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -945,7 +1026,7 @@ memoryLimitBytes: number
 writableBytes: number
 startedAt?: string
 }, {
-role: ("hermes" | "runtime-boundary")
+role: ("hermes" | "hermes-dashboard" | "runtime-boundary")
 status: string
 containerId: string
 containerName: string
@@ -966,8 +1047,8 @@ owner_scope: {
 organization_id: string
 user_id: string
 agent_id: string
-runtime_id?: string
-workspace_id?: string
+runtime_id: string
+workspace_id: string
 conversation_id?: string
 }
 authorization: {
@@ -4865,3 +4946,4 @@ export type RuntimeStreamOperation = RuntimeStreamEnvelope["operation"];
 export type ModuleLayer = RuntimeHeartbeat["components"][number]["layer"];
 
 export type ModuleStatus = RuntimeHeartbeat["status"];
+

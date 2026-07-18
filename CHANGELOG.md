@@ -48,3 +48,9 @@
   channel, and integration contracts.
 - Include `backup.restore`, `backup.expire`, test-run evidence, and upstream
   candidate identifiers in the canonical Control Plane protocol.
+## 2.2.0
+
+- Add fixed Hermes management operation names for provider, model, tools, skills, MCP, profiles, cron, diagnostics, analytics, and controlled files.
+- Add Agent-scoped Scene Snapshot, Scene Patch, and Scene Intent contracts.
+- Add the `hermes-dashboard` resource role for the separately supervised Hermes management service.
+

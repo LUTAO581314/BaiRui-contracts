@@ -252,6 +252,67 @@ function operationSchema(name, operations) {
 export const runtimeOperationEnvelopeSchema = operationSchema("runtime-operation-envelope", RUNTIME_OPERATIONS);
 export const runtimeStreamEnvelopeSchema = operationSchema("runtime-stream-envelope", RUNTIME_STREAM_OPERATIONS);
 
+const sceneOperation = {
+  type: "object",
+  additionalProperties: false,
+  required: ["op", "path"],
+  properties: {
+    op: { enum: ["add", "replace", "remove"] },
+    path: { type: "string", pattern: "^/[A-Za-z0-9_./-]{1,512}$" },
+    value: {}
+  }
+};
+
+export const sceneSnapshotSchema = document("scene-snapshot", {
+  title: "SceneSnapshot",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "scene_id", "owner_scope", "revision", "view", "generated_at", "trace"],
+  properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
+    scene_id: identifier,
+    owner_scope: ownerScope(["workspace_id"]),
+    revision: { type: "integer", minimum: 0 },
+    view: flexibleObject,
+    generated_at: timestamp,
+    trace
+  }
+});
+
+export const scenePatchSchema = document("scene-patch", {
+  title: "ScenePatch",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "scene_id", "owner_scope", "base_revision", "revision", "operations", "generated_at", "trace"],
+  properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
+    scene_id: identifier,
+    owner_scope: ownerScope(["workspace_id"]),
+    base_revision: { type: "integer", minimum: 0 },
+    revision: { type: "integer", minimum: 1 },
+    operations: { type: "array", minItems: 1, maxItems: 200, items: sceneOperation },
+    generated_at: timestamp,
+    trace
+  }
+});
+
+export const sceneIntentSchema = document("scene-intent", {
+  title: "SceneIntent",
+  type: "object",
+  additionalProperties: false,
+  required: ["schema_version", "scene_id", "owner_scope", "intent_id", "action", "payload", "created_at", "trace"],
+  properties: {
+    schema_version: { const: DATA_PROTOCOL_VERSION },
+    scene_id: identifier,
+    owner_scope: ownerScope(["workspace_id"]),
+    intent_id: identifier,
+    action: { enum: ["navigate", "command", "refresh", "resync"] },
+    payload: flexibleObject,
+    created_at: timestamp,
+    trace
+  }
+});
+
 const heartbeatComponent = {
   type: "object",
   additionalProperties: false,
@@ -330,7 +391,7 @@ const resourceContainer = {
   additionalProperties: false,
   required: ["role", "status", "containerId", "containerName", "imageRef", "cpuPercent", "memoryUsedBytes", "memoryLimitBytes", "writableBytes"],
   properties: {
-    role: { enum: ["hermes", "runtime-boundary"] },
+    role: { enum: ["hermes", "hermes-dashboard", "runtime-boundary"] },
     status: { type: "string", minLength: 1, maxLength: 64 },
     containerId: { type: "string", minLength: 1, maxLength: 128 },
     containerName: { type: "string", minLength: 1, maxLength: 200 },
@@ -393,7 +454,7 @@ export const credentialResolutionSchema = document("credential-resolution", {
   required: ["schema_version", "owner_scope", "authorization", "credential"],
   properties: {
     schema_version: { const: DATA_PROTOCOL_VERSION },
-    owner_scope: ownerScope(),
+    owner_scope: ownerScope(["runtime_id", "workspace_id"]),
     authorization: {
       type: "object",
       additionalProperties: false,
@@ -779,6 +840,9 @@ export const SCHEMAS = Object.freeze({
   "runtime-request-envelope": runtimeRequestEnvelopeSchema,
   "runtime-operation-envelope": runtimeOperationEnvelopeSchema,
   "runtime-stream-envelope": runtimeStreamEnvelopeSchema,
+  "scene-snapshot": sceneSnapshotSchema,
+  "scene-patch": scenePatchSchema,
+  "scene-intent": sceneIntentSchema,
   "runtime-heartbeat": runtimeHeartbeatSchema,
   "resource-report": resourceReportSchema,
   "credential-resolution": credentialResolutionSchema,
@@ -814,3 +878,4 @@ export const OPENAPI_PATHS = Object.freeze({
 });
 
 export { idPattern, identifier, timestamp, stringMap };
+

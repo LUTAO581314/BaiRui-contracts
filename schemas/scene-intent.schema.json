@@ -1,18 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.bairui.ai/v2/credential-resolution.schema.json",
-  "title": "CredentialResolution",
+  "$id": "https://contracts.bairui.ai/v2/scene-intent.schema.json",
+  "title": "SceneIntent",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
+    "scene_id",
     "owner_scope",
-    "authorization",
-    "credential"
+    "intent_id",
+    "action",
+    "payload",
+    "created_at",
+    "trace"
   ],
   "properties": {
     "schema_version": {
       "const": "2.0"
+    },
+    "scene_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
     "owner_scope": {
       "type": "object",
@@ -21,7 +29,6 @@
         "organization_id",
         "user_id",
         "agent_id",
-        "runtime_id",
         "workspace_id"
       ],
       "properties": {
@@ -56,63 +63,44 @@
         ]
       }
     },
-    "authorization": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "service",
-        "label",
-        "authType",
-        "metadata"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-        },
-        "service": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200
-        },
-        "authType": {
-          "enum": [
-            "api_key",
-            "bearer",
-            "bearer_token",
-            "basic",
-            "oauth_refresh"
-          ]
-        },
-        "endpointUrl": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri"
-        },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": true
-        }
-      }
+    "intent_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
     },
-    "credential": {
+    "action": {
+      "enum": [
+        "navigate",
+        "command",
+        "refresh",
+        "resync"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trace": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "secret"
+        "correlation_id"
       ],
       "properties": {
-        "secret": {
+        "correlation_id": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 65536
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "parent_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
         }
       }
     }

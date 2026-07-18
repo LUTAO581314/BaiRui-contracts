@@ -111,6 +111,9 @@ export const validateAgentOwnerScope = (value) => assertContract("agent-owner-sc
 export const validateArtifactPointer = (value) => assertContract("artifact-pointer", value);
 export const validateRuntimeOperationEnvelope = (value) => validateRuntimeOperation("runtime-operation-envelope", value);
 export const validateRuntimeStreamEnvelope = (value) => validateRuntimeOperation("runtime-stream-envelope", value);
+export const validateSceneSnapshot = (value) => assertContract("scene-snapshot", value);
+export const validateScenePatch = (value) => assertContract("scene-patch", value);
+export const validateSceneIntent = (value) => assertContract("scene-intent", value);
 export const validateRuntimeHeartbeat = (value) => assertContract("runtime-heartbeat", value);
 export const validateResourceReport = (value) => assertContract("resource-report", value);
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
@@ -169,3 +172,4 @@ export {
   RUNTIME_STREAM_OPERATIONS,
   SCHEMAS
 };
+

@@ -145,6 +145,7 @@
                 "role": {
                   "enum": [
                     "hermes",
+                    "hermes-dashboard",
                     "runtime-boundary"
                   ]
                 },
@@ -200,3 +201,4 @@
     }
   }
 }
+
