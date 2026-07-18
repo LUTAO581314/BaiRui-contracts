@@ -1,6 +1,7 @@
 # C00-02 schema audit
 
-This audit is against Contracts `v2.3.0-rc.1` and is limited to the shared
+This audit started against Contracts `v2.3.0-rc.1`; the approved schema fixes
+are published by this change as `v2.3.0-rc.2`. The audit is limited to the shared
 contract package. It does not change Platform, Agent, PostgreSQL, or Server
 Agent consumers.
 
@@ -43,7 +44,7 @@ final verification remain consumer responsibilities.
 
 ## C00-03 readiness conclusion
 
-`v2.3.0-rc.1` is sufficient as the basis for the canonical C00-03 wire source
+`v2.3.0-rc.2` is sufficient as the basis for the canonical C00-03 wire source
 after applying the strict approval-field fix in this audit. The existing tag
 does not contain that fix until this commit is released or pinned directly.
 Even after the fix, it is not a drop-in contract for the current C00-03

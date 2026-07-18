@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.0-rc.2
+
+- Reject `approval_id` on canonical non-approval commands and on leased
+  non-approval commands while preserving legacy read compatibility.
+- Require the signature, timestamp, and nonce transport headers on every
+  OpenAPI control-plane mutation.
+- Add negative coverage for opaque `sr_` secret references, signature
+  chronology, mutation-field completeness, and approval/action binding.
+- Record the C00-03 consumer migration matrix without introducing aliases for
+  legacy desired-state, observation, lease, receipt, or error-code fields.
+
 ## 2.3.0-rc.1
 
 - Add the C00-02 control contract surfaces for `DesiredState`, `Observation`,
