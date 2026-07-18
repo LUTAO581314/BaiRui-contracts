@@ -1,5 +1,6 @@
-export const CONTRACTS_VERSION = "2.2.1";
+export const CONTRACTS_VERSION = "2.3.0-rc.1";
 export const CONTROL_PROTOCOL_VERSION = "1.0";
+export const CONTROL_SCHEMA_VERSION = "1.0";
 export const CHANNEL_PROTOCOL_VERSION = "2.0";
 export const RUNTIME_PROTOCOL_VERSION = "2.0";
 export const DATA_PROTOCOL_VERSION = "2.0";
@@ -30,7 +31,6 @@ export const CONTROL_ACTION_ARGUMENTS = Object.freeze({
   "upstream.check": { required: ["upstream_id"], optional: ["candidate_id", "test_run_id"] },
   "config.stage": { required: ["config_revision_id"], optional: [] },
   "config.apply": { required: ["config_revision_id"], optional: [] },
-  "config.apply-user": { required: ["config_revision_id"], optional: [] },
   "backup.create": { required: ["backup_policy_id"], optional: ["backup_id"] },
   "backup.verify": { required: ["backup_id"], optional: [] },
   "backup.restore": { required: ["backup_id", "restore_id"], optional: [] },
@@ -42,6 +42,12 @@ export const CONTROL_ACTION_ARGUMENTS = Object.freeze({
 });
 
 export const CONTROL_ACTIONS = Object.freeze(Object.keys(CONTROL_ACTION_ARGUMENTS));
+export const CONTROL_QUARANTINED_ACTIONS = Object.freeze(["config.apply-user"]);
+export const LEGACY_CONTROL_ACTION_ARGUMENTS = Object.freeze({
+  ...CONTROL_ACTION_ARGUMENTS,
+  "config.apply-user": { required: ["config_revision_id"], optional: [] }
+});
+export const LEGACY_CONTROL_ACTIONS = Object.freeze(Object.keys(LEGACY_CONTROL_ACTION_ARGUMENTS));
 export const CONTROL_APPROVAL_ACTIONS = Object.freeze([
   "config.apply",
   "backup.restore",
@@ -53,6 +59,75 @@ export const CONTROL_APPROVAL_ACTIONS = Object.freeze([
 ]);
 export const CONTROL_COMMAND_STATES = Object.freeze([
   "queued", "leased", "accepted", "running", "succeeded", "failed", "cancelled", "expired"
+]);
+export const CONTROL_EVENT_STATES = Object.freeze([
+  "queued", "leased", "accepted", "running", "executing", "verifying",
+  "succeeded", "failed", "cancelled", "expired"
+]);
+export const CONTROL_EVENT_TYPES = Object.freeze([
+  "command.queued", "command.leased", "command.accepted", "command.started",
+  "command.executing", "command.progress", "command.verification.started",
+  "command.verified", "command.failed", "command.cancelled", "command.expired",
+  "lease.renewed"
+]);
+export const CONTROL_RECEIPT_STATES = Object.freeze([
+  "accepted", "running", "executing", "completion_candidate", "failed", "cancelled", "expired"
+]);
+export const CONTROL_APPROVAL_DECISIONS = Object.freeze(["pending", "approved", "rejected", "expired"]);
+export const CONTROL_RISK_LEVELS = Object.freeze(["low", "medium", "high", "critical"]);
+export const CONTROL_RELEASE_STATUSES = Object.freeze([
+  "candidate", "approved", "rolling_out", "released", "blocked", "withdrawn"
+]);
+export const CONTROL_DESIRED_STATES = Object.freeze([
+  "proposed", "accepted", "active", "superseded", "rejected"
+]);
+export const CONTROL_TARGET_STATES = Object.freeze([
+  "provisioned", "running", "stopped", "suspended", "deleted"
+]);
+export const CONTROL_SIGNATURE_ALGORITHMS = Object.freeze(["ed25519", "hmac-sha256"]);
+export const CONTROL_MUTATION_FIELDS = Object.freeze([
+  "organization_id", "user_id", "agent_id", "server_id", "request_id",
+  "correlation_id", "idempotency_key", "created_at", "revision", "sequence", "signature"
+]);
+export const CONTROL_COMPATIBILITY_WINDOW = Object.freeze({
+  current_contracts: CONTRACTS_VERSION,
+  legacy_contracts_range: "2.2.x",
+  current_schema_version: CONTROL_SCHEMA_VERSION,
+  dual_read_required: true,
+  implicit_conversion: false,
+  legacy_surfaces: Object.freeze(["control-command@1.0", "runtime-heartbeat@2.0", "resource-report@2.0"]),
+  canonical_receipt_completion_state: "completion_candidate",
+  quarantined_actions: CONTROL_QUARANTINED_ACTIONS
+});
+export const CONTROL_ERROR_CODES = Object.freeze([
+  "invalid_schema_version",
+  "unsupported_schema_version",
+  "unknown_field",
+  "missing_field",
+  "invalid_identifier",
+  "invalid_action",
+  "quarantined_action",
+  "forbidden_action",
+  "forbidden_field",
+  "raw_secret_not_allowed",
+  "invalid_signature",
+  "signature_key_unknown",
+  "signature_expired",
+  "replay_detected",
+  "idempotency_conflict",
+  "revision_conflict",
+  "sequence_conflict",
+  "owner_mismatch",
+  "server_mismatch",
+  "approval_required",
+  "approval_not_valid",
+  "lease_not_found",
+  "lease_expired",
+  "receipt_conflict",
+  "release_not_immutable",
+  "evidence_not_found",
+  "stale_observation",
+  "verification_failed"
 ]);
 
 export const RUNTIME_OPERATIONS = Object.freeze([

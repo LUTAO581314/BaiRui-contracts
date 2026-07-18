@@ -1,5 +1,49 @@
 # Changelog
 
+## 2.3.0-rc.1
+
+- Add the C00-02 control contract surfaces for `DesiredState`, `Observation`,
+  `CommandEvent`, `Approval`, `ReleaseManifest`, `ControlCommandEnvelope`, and
+  signed lease request, lease grant, receipt, and control-error envelopes.
+- Require new control mutations to carry organization, user, agent, server,
+  request, correlation, idempotency, creation time, revision, sequence, and a
+  verifiable signature descriptor. Apart from non-secret signature material,
+  payloads contain references and evidence identifiers only; configuration
+  documents and secret values are not valid control fields.
+- Add allow-listed event states, safe control error codes, redacted observation
+  records, immutable release artifact references, and lease/receipt binding
+  checks.
+- Quarantine `config.apply-user` from canonical command envelopes while keeping
+  it readable through the legacy `ControlCommand@1.0` compatibility surface.
+- Separate desired-revision status from its operational target, require
+  observation freshness/source identity, and bind command events to their
+  deployment, source, receive time, and state-specific event type.
+- Replace Server Agent receipt `succeeded` with `completion_candidate`; only an
+  Authority-generated `command.verified` event may represent final success.
+- Bind envelope idempotency, approval scope and separation of duties, command
+  placement, lease expiry, release compatibility, and signature chronology in
+  the runtime validators.
+- Generate declarations for the package's validator and protocol exports and
+  preserve concrete command/leased-command types instead of `unknown` maps.
+- Describe timestamp, nonce, and signature transport headers in OpenAPI and
+  return `ControlError` for Control Plane error responses.
+- Preserve the accepted `ControlCommand` 1.0, `RuntimeHeartbeat` 2.0, and
+  `ResourceReport` 2.0 payloads. The `Heartbeat` schema/validator is a
+  compatibility alias for the existing heartbeat contract; `ResourceSample` is
+  the existing sample item shape. Legacy `ControlCommand` remains readable as
+  the unsigned 1.0 payload; new signed envelopes accept only its canonical safe
+  action subset and do not translate quarantined actions.
+- Compatibility window: 2.2.x consumers may continue reading the legacy
+  contracts throughout the 2.3.x line; removal requires a later major-version
+  decision and changelog entry. New producers should dual-read legacy payloads
+  and emit the 2.3 control envelopes only after the consumer advertises control
+  schema 1.0 support. No implicit field conversion is defined.
+- Control error codes include `invalid_schema_version`, `unknown_field`,
+  `raw_secret_not_allowed`, `invalid_signature`, `replay_detected`,
+  `idempotency_conflict`, `revision_conflict`, `sequence_conflict`,
+  `approval_not_valid`, `lease_expired`, `receipt_conflict`, and
+  `release_not_immutable`.
+
 ## 2.2.1
 
 - Align the Runtime operation contract with the complete Hermes management

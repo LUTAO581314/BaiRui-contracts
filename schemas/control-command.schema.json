@@ -48,7 +48,6 @@
         "upstream.check",
         "config.stage",
         "config.apply",
-        "config.apply-user",
         "backup.create",
         "backup.verify",
         "backup.restore",
@@ -56,7 +55,8 @@
         "release.stage",
         "release.apply",
         "release.rollback",
-        "service.restart"
+        "service.restart",
+        "config.apply-user"
       ]
     },
     "target": {
@@ -544,35 +544,6 @@
       "if": {
         "properties": {
           "action": {
-            "const": "config.apply-user"
-          }
-        },
-        "required": [
-          "action"
-        ]
-      },
-      "then": {
-        "properties": {
-          "arguments": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "config_revision_id"
-            ],
-            "properties": {
-              "config_revision_id": {
-                "type": "string",
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "action": {
             "const": "backup.create"
           }
         },
@@ -819,6 +790,35 @@
             ],
             "properties": {
               "service_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "config.apply-user"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "config_revision_id"
+            ],
+            "properties": {
+              "config_revision_id": {
                 "type": "string",
                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
               }

@@ -1,0 +1,33 @@
+{
+  "organizationId": "org_1",
+  "userId": "user_1",
+  "agentId": "agent_1",
+  "runtimeId": "runtime_1",
+  "sequence": 1,
+  "status": "healthy",
+  "queueDepth": 0,
+  "activeRuns": 0,
+  "failedRuns": 0,
+  "observedAt": "2026-07-18T00:07:00Z",
+  "components": [
+    {
+      "layer": "core-runtime",
+      "moduleId": "control-supervisor",
+      "status": "healthy",
+      "version": "1.0.0",
+      "capabilities": [],
+      "metrics": {},
+      "observedAt": "2026-07-18T00:07:00Z"
+    },
+    {
+      "layer": "data-storage",
+      "moduleId": "control-store",
+      "status": "healthy",
+      "version": "1.0.0",
+      "capabilities": [],
+      "metrics": {},
+      "observedAt": "2026-07-18T00:07:00Z"
+    }
+  ],
+  "events": []
+}

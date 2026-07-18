@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "organization_id": "org_1",
+  "user_id": "system_user",
+  "agent_id": "agent_1",
+  "server_id": "server_1",
+  "request_id": "req_lease_1",
+  "correlation_id": "corr_control_1",
+  "idempotency_key": "idem_lease_grant_1",
+  "created_at": "2026-07-18T00:05:03Z",
+  "revision": 1,
+  "sequence": 7,
+  "signature": {
+    "algorithm": "hmac-sha256",
+    "key_id": "key_platform_1",
+    "value": "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG==",
+    "signed_at": "2026-07-18T00:05:04Z"
+  },
+  "lease_id": "lease_1",
+  "lease_expires_at": "2026-07-18T00:07:03Z",
+  "issued_at": "2026-07-18T00:05:03Z",
+  "commands": [
+    {
+      "schema_version": "1.0",
+      "command_id": "command_1",
+      "idempotency_key": "idem_command_1",
+      "deployment_id": "deployment_1",
+      "action": "deployment.start",
+      "target": {
+        "module_id": "control-supervisor",
+        "instance_id": "instance_1"
+      },
+      "arguments": {
+        "agent_id": "agent_1"
+      },
+      "expected_observation_version": 1,
+      "created_at": "2026-07-18T00:05:03Z",
+      "expires_at": "2026-07-18T00:06:03Z",
+      "attempt": 1,
+      "lease_id": "lease_1",
+      "lease_token": "ref:lease-token-1",
+      "lease_expires_at": "2026-07-18T00:07:03Z",
+      "placement": {
+        "organization_id": "org_1",
+        "agent_id": "agent_1",
+        "server_id": "server_1"
+      },
+      "config_revision_ref": "ref:config-revision-1",
+      "release_manifest_ref": "ref:release-1"
+    }
+  ]
+}

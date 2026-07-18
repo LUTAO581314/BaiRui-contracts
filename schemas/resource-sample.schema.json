@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.bairui.ai/v2/resource-sample.schema.json",
+  "title": "ResourceSample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agentId",
+    "runtimeId",
+    "deploymentId",
+    "sequence",
+    "status",
+    "cpuPercent",
+    "memoryUsedBytes",
+    "memoryLimitBytes",
+    "agentStorageUsedBytes",
+    "hostStorageUsedBytes",
+    "hostStorageLimitBytes",
+    "osType",
+    "architecture",
+    "operatingSystem",
+    "dockerVersion",
+    "cpuCount",
+    "uptimeSeconds",
+    "observedAt",
+    "containers"
+  ],
+  "properties": {
+    "agentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "runtimeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "deploymentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "cpuPercent": {
+      "type": "number",
+      "minimum": 0
+    },
+    "memoryUsedBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "memoryLimitBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "agentStorageUsedBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hostStorageUsedBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hostStorageLimitBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "osType": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "architecture": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "operatingSystem": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "dockerVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "cpuCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uptimeSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "containers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "status",
+          "containerId",
+          "containerName",
+          "imageRef",
+          "cpuPercent",
+          "memoryUsedBytes",
+          "memoryLimitBytes",
+          "writableBytes"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "hermes",
+              "hermes-dashboard",
+              "runtime-boundary"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "containerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "containerName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "imageRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "cpuPercent": {
+            "type": "number",
+            "minimum": 0
+          },
+          "memoryUsedBytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "memoryLimitBytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "writableBytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

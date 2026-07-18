@@ -1,0 +1,33 @@
+{
+  "agentId": "agent_1",
+  "runtimeId": "runtime_1",
+  "deploymentId": "deployment_1",
+  "sequence": 1,
+  "status": "healthy",
+  "cpuPercent": 12.5,
+  "memoryUsedBytes": 1024,
+  "memoryLimitBytes": 4096,
+  "agentStorageUsedBytes": 2048,
+  "hostStorageUsedBytes": 4096,
+  "hostStorageLimitBytes": 8192,
+  "osType": "linux",
+  "architecture": "amd64",
+  "operatingSystem": "Linux",
+  "dockerVersion": "27.0.0",
+  "cpuCount": 2,
+  "uptimeSeconds": 60,
+  "observedAt": "2026-07-18T00:07:00Z",
+  "containers": [
+    {
+      "role": "runtime-boundary",
+      "status": "running",
+      "containerId": "container_1",
+      "containerName": "boundary_1",
+      "imageRef": "ref:boundary-image",
+      "cpuPercent": 1.5,
+      "memoryUsedBytes": 512,
+      "memoryLimitBytes": 2048,
+      "writableBytes": 128
+    }
+  ]
+}

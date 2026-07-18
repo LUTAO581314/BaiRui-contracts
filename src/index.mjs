@@ -10,10 +10,26 @@ import {
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
+  CONTROL_APPROVAL_DECISIONS,
   CONTROL_COMMAND_STATES,
+  CONTROL_COMPATIBILITY_WINDOW,
+  CONTROL_DESIRED_STATES,
+  CONTROL_ERROR_CODES,
+  CONTROL_EVENT_STATES,
+  CONTROL_EVENT_TYPES,
+  CONTROL_MUTATION_FIELDS,
   CONTROL_PROTOCOL_VERSION,
+  CONTROL_QUARANTINED_ACTIONS,
+  CONTROL_RECEIPT_STATES,
+  CONTROL_RELEASE_STATUSES,
+  CONTROL_RISK_LEVELS,
+  CONTROL_SCHEMA_VERSION,
+  CONTROL_SIGNATURE_ALGORITHMS,
+  CONTROL_TARGET_STATES,
   DATA_PROTOCOL_VERSION,
   IDENTITY_KINDS,
+  LEGACY_CONTROL_ACTIONS,
+  LEGACY_CONTROL_ACTION_ARGUMENTS,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,
@@ -58,11 +74,21 @@ export function assertContract(contract, value) {
   return value;
 }
 
+function validateCommandTimes(contract, command, prefix = "") {
+  if (Date.parse(command.expires_at) <= Date.parse(command.created_at)) {
+    throw new ContractValidationError(contract, [{ instancePath: `${prefix}/expires_at`, schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after created_at" }]);
+  }
+  if (command.not_before) {
+    assertAfter(contract, command.created_at, command.not_before, `${prefix}/not_before`);
+    if (Date.parse(command.expires_at) <= Date.parse(command.not_before)) {
+      throw new ContractValidationError(contract, [{ instancePath: `${prefix}/expires_at`, schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after not_before" }]);
+    }
+  }
+}
+
 export function validateControlCommand(value) {
   const command = assertContract("control-command", value);
-  if (Date.parse(command.expires_at) <= Date.parse(command.created_at)) {
-    throw new ContractValidationError("control-command", [{ instancePath: "/expires_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after created_at" }]);
-  }
+  validateCommandTimes("control-command", command);
   return command;
 }
 
@@ -107,6 +133,166 @@ function sameOwner(left, right) {
   return ["organization_id", "user_id", "agent_id"].every((field) => left[field] === right[field]);
 }
 
+function assertAfter(contract, before, after, instancePath) {
+  if (Date.parse(after) < Date.parse(before)) {
+    throw new ContractValidationError(contract, [{
+      instancePath,
+      schemaPath: "#/semantic",
+      keyword: "after",
+      params: {},
+      message: "must not be before the preceding event time"
+    }]);
+  }
+}
+
+function validateMutation(contract, value) {
+  const mutation = assertContract(contract, value);
+  assertAfter(contract, mutation.created_at, mutation.signature.signed_at, "/signature/signed_at");
+  if (mutation.updated_at) assertAfter(contract, mutation.created_at, mutation.updated_at, "/updated_at");
+  return mutation;
+}
+
+export function validateControlCommandEnvelope(value) {
+  const envelope = validateMutation("control-command-envelope", value);
+  validateCommandTimes("control-command-envelope", envelope.command, "/command");
+  if (envelope.idempotency_key !== envelope.command.idempotency_key) {
+    semanticIssue("control-command-envelope", "/command/idempotency_key", "must match idempotency_key");
+  }
+  if (envelope.command.arguments.agent_id && envelope.command.arguments.agent_id !== envelope.agent_id) {
+    semanticIssue("control-command-envelope", "/command/arguments/agent_id", "must match agent_id");
+  }
+  return envelope;
+}
+
+export function validateDesiredState(value) {
+  const state = validateMutation("desired-state", value);
+  if (state.expires_at) assertAfter("desired-state", state.created_at, state.expires_at, "/expires_at");
+  if (state.valid_from) assertAfter("desired-state", state.created_at, state.valid_from, "/valid_from");
+  return state;
+}
+
+export function validateObservation(value) {
+  const observation = validateMutation("observation", value);
+  assertAfter("observation", observation.created_at, observation.observed_at, "/observed_at");
+  if (observation.received_at) assertAfter("observation", observation.observed_at, observation.received_at, "/received_at");
+  return observation;
+}
+export const validateControlObservation = validateObservation;
+
+export function validateCommandEvent(value) {
+  const event = validateMutation("command-event", value);
+  assertAfter("command-event", event.created_at, event.occurred_at, "/occurred_at");
+  assertAfter("command-event", event.occurred_at, event.received_at, "/received_at");
+  if (event.completed_at) assertAfter("command-event", event.occurred_at, event.completed_at, "/completed_at");
+  return event;
+}
+export const validateControlCommandEvent = validateCommandEvent;
+
+export function validateApproval(value) {
+  const approval = validateMutation("approval", value);
+  if (Date.parse(approval.expires_at) <= Date.parse(approval.created_at)) {
+    throw new ContractValidationError("approval", [{ instancePath: "/expires_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after created_at" }]);
+  }
+  if (approval.decided_at) assertAfter("approval", approval.created_at, approval.decided_at, "/decided_at");
+  if (["approved", "rejected"].includes(approval.decision) && Date.parse(approval.decided_at) > Date.parse(approval.expires_at)) {
+    throw new ContractValidationError("approval", [{ instancePath: "/decided_at", schemaPath: "#/semantic", keyword: "before", params: {}, message: "must not be after expires_at" }]);
+  }
+  if (approval.decision === "expired" && Date.parse(approval.decided_at) < Date.parse(approval.expires_at)) {
+    throw new ContractValidationError("approval", [{ instancePath: "/decided_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must not be before expires_at for an expired approval" }]);
+  }
+  if (["approved", "rejected"].includes(approval.decision) && approval.requested_by === approval.decided_by) {
+    semanticIssue("approval", "/decided_by", "must differ from requested_by");
+  }
+  for (const field of ["organization_id", "agent_id", "server_id"]) {
+    if (approval.scope[field] !== approval[field]) semanticIssue("approval", `/scope/${field}`, `must match ${field}`);
+  }
+  if (approval.scope.user_id && approval.scope.user_id !== approval.user_id) semanticIssue("approval", "/scope/user_id", "must match user_id");
+  return approval;
+}
+export const validateControlApproval = validateApproval;
+
+function semverParts(value) {
+  const [withoutBuild] = value.split("+");
+  const separator = withoutBuild.indexOf("-");
+  const core = separator === -1 ? withoutBuild : withoutBuild.slice(0, separator);
+  const prerelease = separator === -1 ? null : withoutBuild.slice(separator + 1).split(".");
+  return { core: core.split(".").map(Number), prerelease };
+}
+
+function compareSemver(left, right) {
+  const a = semverParts(left);
+  const b = semverParts(right);
+  for (let index = 0; index < 3; index += 1) {
+    if (a.core[index] !== b.core[index]) return a.core[index] < b.core[index] ? -1 : 1;
+  }
+  if (a.prerelease === null || b.prerelease === null) return a.prerelease === b.prerelease ? 0 : a.prerelease === null ? 1 : -1;
+  const length = Math.max(a.prerelease.length, b.prerelease.length);
+  for (let index = 0; index < length; index += 1) {
+    const leftPart = a.prerelease[index];
+    const rightPart = b.prerelease[index];
+    if (leftPart === undefined || rightPart === undefined) return leftPart === rightPart ? 0 : leftPart === undefined ? -1 : 1;
+    if (leftPart === rightPart) continue;
+    const leftNumber = /^[0-9]+$/.test(leftPart);
+    const rightNumber = /^[0-9]+$/.test(rightPart);
+    if (leftNumber && rightNumber) return Number(leftPart) < Number(rightPart) ? -1 : 1;
+    if (leftNumber !== rightNumber) return leftNumber ? -1 : 1;
+    return leftPart < rightPart ? -1 : 1;
+  }
+  return 0;
+}
+
+export function validateReleaseManifest(value) {
+  const manifest = validateMutation("release-manifest", value);
+  const prerelease = semverParts(manifest.version).prerelease !== null;
+  if ((manifest.channel === "prerelease") !== prerelease) {
+    throw new ContractValidationError("release-manifest", [{ instancePath: "/channel", schemaPath: "#/semantic", keyword: "channel", params: {}, message: "must match the version prerelease marker" }]);
+  }
+  if (compareSemver(manifest.compatibility.contracts_min, manifest.contracts_version) > 0) {
+    semanticIssue("release-manifest", "/compatibility/contracts_min", "must not exceed contracts_version");
+  }
+  if (manifest.compatibility.contracts_max && compareSemver(manifest.compatibility.contracts_max, manifest.contracts_version) < 0) {
+    semanticIssue("release-manifest", "/compatibility/contracts_max", "must not be below contracts_version");
+  }
+  const components = manifest.artifacts.map((artifact) => artifact.component);
+  if (new Set(components).size !== components.length) semanticIssue("release-manifest", "/artifacts", "must contain at most one artifact per component");
+  return manifest;
+}
+
+export function validateLeaseRequestEnvelope(value) {
+  const request = validateMutation("lease-request-envelope", value);
+  assertAfter("lease-request-envelope", request.created_at, request.requested_at, "/requested_at");
+  return request;
+}
+
+export function validateLeaseEnvelope(value) {
+  const lease = validateMutation("lease-envelope", value);
+  assertAfter("lease-envelope", lease.created_at, lease.issued_at, "/issued_at");
+  if (Date.parse(lease.lease_expires_at) <= Date.parse(lease.issued_at)) {
+    throw new ContractValidationError("lease-envelope", [{ instancePath: "/lease_expires_at", schemaPath: "#/semantic", keyword: "after", params: {}, message: "must be after issued_at" }]);
+  }
+  for (const [index, command] of lease.commands.entries()) {
+    validateCommandTimes("lease-envelope", command, `/commands/${index}`);
+    if (command.lease_id !== lease.lease_id) semanticIssue("lease-envelope", `/commands/${index}/lease_id`, "must match lease_id");
+    if (Date.parse(command.lease_expires_at) > Date.parse(lease.lease_expires_at)) semanticIssue("lease-envelope", `/commands/${index}/lease_expires_at`, "must not outlive lease_expires_at");
+    if (Date.parse(command.expires_at) > Date.parse(command.lease_expires_at)) semanticIssue("lease-envelope", `/commands/${index}/expires_at`, "must not outlive command.lease_expires_at");
+    for (const field of ["organization_id", "agent_id", "server_id"]) {
+      if (command.placement[field] !== lease[field]) semanticIssue("lease-envelope", `/commands/${index}/placement/${field}`, `must match ${field}`);
+    }
+    if (command.placement.user_id && command.placement.user_id !== lease.user_id) semanticIssue("lease-envelope", `/commands/${index}/placement/user_id`, "must match user_id");
+    if (command.arguments.agent_id && command.arguments.agent_id !== lease.agent_id) semanticIssue("lease-envelope", `/commands/${index}/arguments/agent_id`, "must match agent_id");
+  }
+  return lease;
+}
+
+export function validateReceiptEnvelope(value) {
+  const receipt = validateMutation("receipt-envelope", value);
+  assertAfter("receipt-envelope", receipt.created_at, receipt.observed_at, "/observed_at");
+  if (receipt.completed_at) assertAfter("receipt-envelope", receipt.observed_at, receipt.completed_at, "/completed_at");
+  return receipt;
+}
+
+export const validateControlError = (value) => assertContract("control-error", value);
+
 export const validateAgentOwnerScope = (value) => assertContract("agent-owner-scope", value);
 export const validateArtifactPointer = (value) => assertContract("artifact-pointer", value);
 export const validateRuntimeOperationEnvelope = (value) => validateRuntimeOperation("runtime-operation-envelope", value);
@@ -116,6 +302,8 @@ export const validateScenePatch = (value) => assertContract("scene-patch", value
 export const validateSceneIntent = (value) => assertContract("scene-intent", value);
 export const validateRuntimeHeartbeat = (value) => assertContract("runtime-heartbeat", value);
 export const validateResourceReport = (value) => assertContract("resource-report", value);
+export const validateHeartbeat = (value) => assertContract("heartbeat", value);
+export const validateResourceSample = (value) => assertContract("resource-sample", value);
 export const validateCredentialResolution = (value) => assertContract("credential-resolution", value);
 export const validateCredentialResolutionRequest = (value) => assertContract("credential-resolution-request", value);
 export const validateMemoryProjection = (value) => assertContract("memory-projection", value);
@@ -161,10 +349,26 @@ export {
   CONTROL_ACTIONS,
   CONTROL_ACTION_ARGUMENTS,
   CONTROL_APPROVAL_ACTIONS,
+  CONTROL_APPROVAL_DECISIONS,
   CONTROL_COMMAND_STATES,
+  CONTROL_COMPATIBILITY_WINDOW,
+  CONTROL_DESIRED_STATES,
+  CONTROL_ERROR_CODES,
+  CONTROL_EVENT_STATES,
+  CONTROL_EVENT_TYPES,
+  CONTROL_MUTATION_FIELDS,
   CONTROL_PROTOCOL_VERSION,
+  CONTROL_QUARANTINED_ACTIONS,
+  CONTROL_RECEIPT_STATES,
+  CONTROL_RELEASE_STATUSES,
+  CONTROL_RISK_LEVELS,
+  CONTROL_SCHEMA_VERSION,
+  CONTROL_SIGNATURE_ALGORITHMS,
+  CONTROL_TARGET_STATES,
   DATA_PROTOCOL_VERSION,
   IDENTITY_KINDS,
+  LEGACY_CONTROL_ACTIONS,
+  LEGACY_CONTROL_ACTION_ARGUMENTS,
   MODULE_LAYERS,
   MODULE_STATUSES,
   RUNTIME_OPERATIONS,

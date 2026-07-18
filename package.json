@@ -1,7 +1,7 @@
 {
   "name": "@bairui/contracts",
-  "version": "2.2.1",
-  "description": "Versioned identity, runtime, control-plane, telemetry, credential, memory, artifact, channel, and integration contracts for BaiRui Agent.",
+  "version": "2.3.0-rc.1",
+  "description": "Versioned identity, deployment-control, runtime, telemetry, credential, memory, artifact, channel, and integration contracts for BaiRui Agent.",
   "type": "module",
   "license": "UNLICENSED",
   "packageManager": "pnpm@11.7.0",
@@ -27,14 +27,16 @@
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "check:generated": "node scripts/check-generated.mjs",
+    "typecheck": "tsc -p tests/types/tsconfig.json",
     "test": "node --test tests/*.test.mjs",
-    "verify": "pnpm run check:generated && pnpm test"
+    "verify": "pnpm run check:generated && pnpm run typecheck && pnpm test"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
-    "json-schema-to-typescript": "^15.0.4"
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^5.9.3"
   }
 }
