@@ -227,7 +227,12 @@ function actionConditions(actionArguments) {
 }
 
 const controlCommandRequired = ["schema_version", "command_id", "idempotency_key", "deployment_id", "action", "target", "arguments", "expected_observation_version", "expires_at", "created_at"];
-function commandShape(actions, actionArguments, { allowSecretRefs = false } = {}) {
+function commandShape(actions, actionArguments, { allowSecretRefs = false, strictApprovalField = false } = {}) {
+  const approvalCondition = {
+    if: { properties: { action: { enum: CONTROL_APPROVAL_ACTIONS } }, required: ["action"] },
+    then: { required: ["approval_id"], properties: { approval_id: identifier } },
+    ...(strictApprovalField ? { else: { not: { required: ["approval_id"] } } } : {})
+  };
   return {
   type: "object",
   additionalProperties: false,
@@ -254,16 +259,13 @@ function commandShape(actions, actionArguments, { allowSecretRefs = false } = {}
   },
   allOf: [
     ...actionConditions(actionArguments),
-    {
-      if: { properties: { action: { enum: CONTROL_APPROVAL_ACTIONS } }, required: ["action"] },
-      then: { required: ["approval_id"], properties: { approval_id: identifier } }
-    }
+    approvalCondition
   ]
   };
 }
 
 const legacyControlCommandShape = commandShape(LEGACY_CONTROL_ACTIONS, LEGACY_CONTROL_ACTION_ARGUMENTS);
-const canonicalControlCommandShape = commandShape(CONTROL_ACTIONS, CONTROL_ACTION_ARGUMENTS, { allowSecretRefs: true });
+const canonicalControlCommandShape = commandShape(CONTROL_ACTIONS, CONTROL_ACTION_ARGUMENTS, { allowSecretRefs: true, strictApprovalField: true });
 
 export const controlCommandSchema = document("control-command", {
   title: "ControlCommand",

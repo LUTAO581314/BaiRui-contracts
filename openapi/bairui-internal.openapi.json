@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "BaiRui Internal Contracts",
-    "version": "2.3.0-rc.1"
+    "version": "2.3.0-rc.2"
   },
   "paths": {
     "/v1/runtime/requests": {
@@ -3362,6 +3362,13 @@
                       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                     }
                   }
+                },
+                "else": {
+                  "not": {
+                    "required": [
+                      "approval_id"
+                    ]
+                  }
                 }
               }
             ]
@@ -6307,6 +6314,13 @@
                         "type": "string",
                         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
                       }
+                    }
+                  },
+                  "else": {
+                    "not": {
+                      "required": [
+                        "approval_id"
+                      ]
                     }
                   }
                 }
