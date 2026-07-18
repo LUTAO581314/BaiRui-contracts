@@ -244,6 +244,30 @@ test("C00-02 publishes mutation fields, compatibility window, and stable error c
   assert.ok(CONTROL_ERROR_CODES.includes("receipt_conflict"));
 });
 
+test("every canonical control surface rejects each missing mutation field", () => {
+  const desired = fixture("valid/desired-state.json");
+  const commandValue = fixture("valid/legacy-control-command.json");
+  const commandEnvelope = Object.fromEntries(["schema_version", ...CONTROL_MUTATION_FIELDS].map((field) => [field, desired[field]]));
+  commandEnvelope.idempotency_key = commandValue.idempotency_key;
+  commandEnvelope.command = commandValue;
+  const surfaces = [
+    [validateDesiredState, desired],
+    [validateObservation, fixture("valid/observation.json")],
+    [validateControlCommandEnvelope, commandEnvelope],
+    [validateCommandEvent, fixture("valid/command-event.json")],
+    [validateLeaseRequestEnvelope, fixture("valid/lease-request-envelope.json")],
+    [validateLeaseEnvelope, fixture("valid/lease-envelope.json")],
+    [validateReceiptEnvelope, fixture("valid/receipt-envelope.json")]
+  ];
+  for (const [validate, value] of surfaces) {
+    for (const field of ["schema_version", ...CONTROL_MUTATION_FIELDS]) {
+      const invalid = structuredClone(value);
+      delete invalid[field];
+      assert.throws(() => validate(invalid), ContractValidationError, `${validate.name} accepted a missing ${field}`);
+    }
+  }
+});
+
 test("C00-02 rejects missing mutation metadata, business actions, raw fields, and broken leases", () => {
   const missing = capturedContractError(() => validateDesiredState(fixture("invalid/missing-mutation-fields.json")));
   assert.ok(missing.issues.some((issue) => issue.keyword === "required" && issue.params.missingProperty === "server_id"));
@@ -274,6 +298,14 @@ test("control command envelopes bind canonical commands and quarantine unsafe le
 
   const mismatch = { ...envelope, idempotency_key: "different_idempotency_key" };
   assert.throws(() => validateControlCommandEnvelope(mismatch), ContractValidationError);
+
+  const nonApprovalWithApproval = { ...commandValue, approval_id: "approval_1" };
+  assert.throws(() => validateControlCommandEnvelope({ ...envelope, idempotency_key: nonApprovalWithApproval.idempotency_key, command: nonApprovalWithApproval }), ContractValidationError);
+
+  const secretCommand = command("deployment.provision", { agent_id: "agent_1", workspace_ref: "workspace:agent_1", config_revision_id: "config_1" }, { secret_refs: ["sr_1234567890abcdef"] });
+  assert.equal(validateControlCommandEnvelope({ ...envelope, idempotency_key: secretCommand.idempotency_key, command: secretCommand }).command.secret_refs[0], "sr_1234567890abcdef");
+  const nonOpaqueSecret = { ...secretCommand, secret_refs: ["ref:provider-key"] };
+  assert.throws(() => validateControlCommandEnvelope({ ...envelope, idempotency_key: nonOpaqueSecret.idempotency_key, command: nonOpaqueSecret }), ContractValidationError);
 });
 
 test("C00-02 enforces lease placement, approval separation, and completion-candidate semantics", () => {
@@ -281,6 +313,9 @@ test("C00-02 enforces lease placement, approval separation, and completion-candi
   const crossServer = structuredClone(lease);
   crossServer.commands[0].placement.server_id = "server_2";
   assert.throws(() => validateLeaseEnvelope(crossServer), ContractValidationError);
+  const unexpectedApproval = structuredClone(lease);
+  unexpectedApproval.commands[0].approval_id = "approval_1";
+  assert.throws(() => validateLeaseEnvelope(unexpectedApproval), ContractValidationError);
 
   const approval = fixture("valid/approval.json");
   assert.throws(() => validateApproval({ ...approval, decided_by: approval.requested_by }), ContractValidationError);
@@ -297,6 +332,7 @@ test("C00-02 enforces lease placement, approval separation, and completion-candi
 
   const desired = fixture("valid/desired-state.json");
   assert.throws(() => validateDesiredState({ ...desired, module_versions: { "core-runtime": "untyped-value" } }), ContractValidationError);
+  assert.throws(() => validateDesiredState({ ...desired, signature: { ...desired.signature, signed_at: "2026-07-17T00:00:00Z" } }), ContractValidationError);
 });
 
 test("release manifests enforce SemVer channels, compatibility bounds, and unique components", () => {
@@ -410,6 +446,9 @@ test("OpenAPI, schemas, fixtures, and generated declarations are committed", () 
   const lease = openapi.paths["/api/internal/control-plane/commands/lease"].post;
   assert.equal(lease.responses[409].content["application/json"].schema.$ref, "#/components/schemas/ControlError");
   assert.deepEqual(Object.keys(lease.security[0]).sort(), ["machineNonce", "machineSignature", "machineTimestamp"]);
+  for (const [pathname, operations] of Object.entries(openapi.paths).filter(([pathname]) => pathname.startsWith("/api/internal/control-plane/"))) {
+    for (const operation of Object.values(operations)) assert.deepEqual(Object.keys(operation.security[0]).sort(), ["machineNonce", "machineSignature", "machineTimestamp"], pathname);
+  }
 
   const declarations = fs.readFileSync(path.join(root, "dist", "index.d.ts"), "utf8");
   assert.match(declarations, /export declare function validateDesiredState\(value: unknown\): DesiredState/);
